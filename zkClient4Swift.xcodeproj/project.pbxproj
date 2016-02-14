@@ -10,6 +10,9 @@
 		A4278FB71C70A53B00322A6E /* zkClient4Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = A4278FB61C70A53B00322A6E /* zkClient4Swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC21C70A76D00322A6E /* ZkClient.swift */; };
 		A4278FC71C70A8AB00322A6E /* ZkSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC61C70A8AB00322A6E /* ZkSerializer.swift */; };
+		A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */; };
+		A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */; };
+		A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCC1C70BE6D00322A6E /* Exceptions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +22,9 @@
 		A4278FC21C70A76D00322A6E /* ZkClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkClient.swift; sourceTree = "<group>"; };
 		A4278FC51C70A7A000322A6E /* SimpleUsage-OSX.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = "SimpleUsage-OSX.playground"; sourceTree = "<group>"; };
 		A4278FC61C70A8AB00322A6E /* ZkSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkSerializer.swift; sourceTree = "<group>"; };
+		A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamOutBuffer.swift; sourceTree = "<group>"; };
+		A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamInBuffer.swift; sourceTree = "<group>"; };
+		A4278FCC1C70BE6D00322A6E /* Exceptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Exceptions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +94,9 @@
 		A4278FC11C70A71800322A6E /* commons */ = {
 			isa = PBXGroup;
 			children = (
+				A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */,
+				A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */,
+				A4278FCC1C70BE6D00322A6E /* Exceptions.swift */,
 			);
 			name = commons;
 			sourceTree = "<group>";
@@ -178,7 +187,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */,
+				A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */,
 				A4278FC71C70A8AB00322A6E /* ZkSerializer.swift in Sources */,
+				A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */,
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

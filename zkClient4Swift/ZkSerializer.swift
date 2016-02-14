@@ -10,6 +10,11 @@ import Foundation
 
 public protocol ZkSerializer {
     
-    func serialize(buf:StreamOutBuffer);
+    /**
+     序列化
+     
+     - parameter buf: 序列化输出
+     */
+//    func serialize(buf:StreamOutBuffer);
     
 }
