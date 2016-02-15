@@ -108,4 +108,75 @@ public class ZkClient {
         return ""
     }
     
+    /**
+     删除一个节点
+     
+     - parameter path: 节点的路径
+     
+     - returns: 删除成功返回true,失败返回false
+     */
+    func delete(path:String) -> Bool {
+        return false
+    }
+    
+    /**
+     获取一个节点的数据
+    
+     - parameter path: 节点数据
+     
+     - returns: 返回的对象
+     */
+    func readData(path:String,deserialize:(StreamInBuffer)->AnyObject? = {inBuffer in inBuffer.readString()}) -> AnyObject? {
+        return nil
+    }
+    
+    /**
+     往一个节点写入一个数据
+     
+     - parameter path: 节点路径
+     - parameter data: 节点数据
+     
+     - throws:
+     */
+    func writeData(path:String,data:AnyObject? = nil)throws -> Void {
+        
+    }
+    
+    /**
+     判断一个路径是否存在
+     
+     - parameter path: 路径
+     
+     - returns: 存在返回true,不存在返回false
+     */
+    func exists(path:String) -> Bool {
+        return false
+    }
+    
+    /**
+     返回一个节点的子节点
+     
+     - parameter path: 节点路径
+     
+     - returns: 子节点,如果当前节点不存在,那么返回nil
+     */
+    func getChildren(path:String) -> [String]? {
+        return nil
+    }
+    
+    /**
+     返回一个节点的子节点数
+     
+     - parameter path: 节点路径
+     
+     - returns: 如果当前节点不存在,或者没有子节点,返回0
+     */
+    func countChildren(path:String) -> Int {
+        guard let count = self.getChildren(path)?.count else {
+            return 0
+        }
+        
+        return count
+    }
+    
 }

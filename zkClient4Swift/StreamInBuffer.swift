@@ -46,15 +46,18 @@ public class StreamInBuffer {
         return _data.getBool(NSRange(location: _pos, length: sizeof(Bool)))
     }
     
-    public func readString() throws -> String{
+    public func readString() -> String?{
         
-        let (_string,len) = try _data.getString(_pos)
-        
-        defer {
-            _pos += len
+        do{
+            let (_string,len) = try _data.getString(_pos)
+            defer {
+                _pos += len
+            }
+            
+            return _string
+        }catch {
+            return nil
         }
-        
-        return _string
     }
     
 //    - (void) readRecord:(id<Deserializable>)record;
