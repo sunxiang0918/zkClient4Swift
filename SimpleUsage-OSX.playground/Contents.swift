@@ -16,6 +16,8 @@ outBuffer.appendInt(7)
 
 let data = outBuffer.getBuffer()
 
+let a = Int32(2)
+
 print(data)
 
 let inBuffer = StreamInBuffer(data:data)

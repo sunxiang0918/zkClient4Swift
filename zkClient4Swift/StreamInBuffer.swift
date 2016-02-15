@@ -20,39 +20,38 @@ public class StreamInBuffer {
     }
     
     public func readInt() -> Int {
-        var val: Int = 0
-        _data.getBytes(&val, range: NSRange(location: _pos, length: sizeof(UInt32)))
-        _pos += sizeof(UInt32)
-        val = Int(CFSwapInt32BigToHost(UInt32(val)))
-        return val
+        
+        defer {
+            _pos += sizeof(UInt32)
+        }
+        
+        return _data.getInt(NSRange(location: _pos, length: sizeof(UInt32)))
     }
     
     public func readLong() -> Int {
-        var val: Int = 0
-        _data.getBytes(&val, range: NSRange(location: _pos, length: sizeof(UInt64)))
-        _pos += sizeof(UInt64)
-        val = Int(CFSwapInt64BigToHost(UInt64(val)))
-        return val
+        
+        defer {
+            _pos += sizeof(UInt64)
+        }
+        
+        return _data.getLong(NSRange(location: _pos, length: sizeof(UInt64)))
     }
     
     public func readBool() -> Bool {
-        var val:Bool = false
-        _data.getBytes(&val, range: NSRange(location: _pos, length: sizeof(Bool)))
-        _pos += sizeof(Bool)
-        return val
+        
+        defer {
+            _pos += sizeof(Bool)
+        }
+        
+        return _data.getBool(NSRange(location: _pos, length: sizeof(Bool)))
     }
     
     public func readString() throws -> String{
-        let len = self.readInt()
         
-        let subData = _data.subdataWithRange(NSRange(location: _pos, length: len))
+        let (_string,len) = try _data.getString(_pos)
         
-        let string = String(data: subData, encoding: NSUTF8StringEncoding)
-        
-        _pos += len
-        
-        guard let _string = string else {
-            throw AppException.FormatCastException
+        defer {
+            _pos += len
         }
         
         return _string

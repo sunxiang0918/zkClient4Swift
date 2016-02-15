@@ -13,6 +13,8 @@
 		A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */; };
 		A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */; };
 		A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCC1C70BE6D00322A6E /* Exceptions.swift */; };
+		A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCF1C70D31D00322A6E /* CreateMode.swift */; };
+		A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +27,8 @@
 		A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamOutBuffer.swift; sourceTree = "<group>"; };
 		A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamInBuffer.swift; sourceTree = "<group>"; };
 		A4278FCC1C70BE6D00322A6E /* Exceptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Exceptions.swift; sourceTree = "<group>"; };
+		A4278FCF1C70D31D00322A6E /* CreateMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateMode.swift; sourceTree = "<group>"; };
+		A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableData+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +91,7 @@
 		A4278FC01C70A6ED00322A6E /* models */ = {
 			isa = PBXGroup;
 			children = (
+				A4278FCF1C70D31D00322A6E /* CreateMode.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -97,6 +102,7 @@
 				A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */,
 				A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */,
 				A4278FCC1C70BE6D00322A6E /* Exceptions.swift */,
+				A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */,
 			);
 			name = commons;
 			sourceTree = "<group>";
@@ -187,11 +193,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,
 				A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */,
 				A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */,
 				A4278FC71C70A8AB00322A6E /* ZkSerializer.swift in Sources */,
 				A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */,
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
+				A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

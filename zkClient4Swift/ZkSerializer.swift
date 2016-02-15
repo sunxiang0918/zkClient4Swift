@@ -15,6 +15,13 @@ public protocol ZkSerializer {
      
      - parameter buf: 序列化输出
      */
-//    func serialize(buf:StreamOutBuffer);
+    func serialize(buf:StreamOutBuffer)
+    
+    /**
+     反序列化
+     
+     - parameter buf:
+     */
+    func deserialize(buf:StreamInBuffer)
     
 }

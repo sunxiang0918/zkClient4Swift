@@ -16,33 +16,20 @@ public class StreamOutBuffer {
     }
     
     public func appendInt(val:Int){
-        var networkOrderVal = CFSwapInt32HostToBig(UInt32(val))
-        _data.appendBytes(&networkOrderVal, length: 4)
+        _data.appendInt(val)
     }
     
     public func appendLong(val:Int){
-        var networkOrderVal = CFSwapInt64HostToBig(UInt64(val));
-        _data.appendBytes(&networkOrderVal, length: sizeof(UInt64))
+        _data.appendLong(val)
     }
     
-    public func appendBool(var val:Bool){
-        _data.appendBytes(&val, length: sizeof(Bool))
+    public func appendBool(val:Bool){
+        _data.appendBool(val)
     }
     
     public func appendString(val:String){
         
-        let pLength : Int = val.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
-        
-//        let pLength = val.characters.count
-        
-        var len = CFSwapInt32HostToBig(UInt32(pLength))
-        
-        _data.appendBytes(&len, length: sizeof(UInt32))
-        
-        let data = val.dataUsingEncoding(NSUTF8StringEncoding)
-        
-        _data.appendData(data!)
-        
+        _data.appendString(val)
     }
     
     public func getBuffer() -> NSData {
