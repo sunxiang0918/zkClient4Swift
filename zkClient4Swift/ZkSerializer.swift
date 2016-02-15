@@ -8,20 +8,7 @@
 
 import Foundation
 
-public protocol ZkSerializer {
+public protocol ZkSerializer:Serializable,Deserializable {
     
-    /**
-     序列化
-     
-     - parameter buf: 序列化输出
-     */
-    func serialize(buf:StreamOutBuffer)
-    
-    /**
-     反序列化
-     
-     - parameter buf:
-     */
-    func deserialize(buf:StreamInBuffer)
     
 }

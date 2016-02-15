@@ -58,6 +58,10 @@ public extension NSMutableData {
 
 public extension NSData {
     
+    convenience init(var uints:[UInt8]) {
+        self.init(bytes:&uints,length:uints.count)
+    }
+    
     // MARK: Int32与Int64
     public func getInt(range:NSRange = NSRange(location:0,length:sizeof(UInt32))) -> Int {
         var val: Int = 0

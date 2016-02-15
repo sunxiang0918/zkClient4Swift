@@ -15,6 +15,16 @@
 		A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCC1C70BE6D00322A6E /* Exceptions.swift */; };
 		A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCF1C70D31D00322A6E /* CreateMode.swift */; };
 		A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */; };
+		A47C48CF1C7208DC00CB6110 /* ysocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48C91C7208DC00CB6110 /* ysocket.swift */; };
+		A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CA1C7208DC00CB6110 /* ytcpsocket.c */; };
+		A47C48D11C7208DC00CB6110 /* ytcpsocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CB1C7208DC00CB6110 /* ytcpsocket.swift */; };
+		A47C48D21C7208DC00CB6110 /* yudpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CC1C7208DC00CB6110 /* yudpsocket.c */; };
+		A47C48D31C7208DC00CB6110 /* yudpsocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CD1C7208DC00CB6110 /* yudpsocket.swift */; };
+		A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D41C72175F00CB6110 /* ReplyHeader.swift */; };
+		A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D61C72179100CB6110 /* Deserializable.swift */; };
+		A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D81C7217B600CB6110 /* Serializable.swift */; };
+		A47C48DB1C721C5B00CB6110 /* ConnectResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DA1C721C5B00CB6110 /* ConnectResponse.swift */; };
+		A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DC1C721EC700CB6110 /* ConnectRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +39,17 @@
 		A4278FCC1C70BE6D00322A6E /* Exceptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Exceptions.swift; sourceTree = "<group>"; };
 		A4278FCF1C70D31D00322A6E /* CreateMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateMode.swift; sourceTree = "<group>"; };
 		A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableData+Extension.swift"; sourceTree = "<group>"; };
+		A47C48C91C7208DC00CB6110 /* ysocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ysocket.swift; sourceTree = "<group>"; };
+		A47C48CA1C7208DC00CB6110 /* ytcpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ytcpsocket.c; sourceTree = "<group>"; };
+		A47C48CB1C7208DC00CB6110 /* ytcpsocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ytcpsocket.swift; sourceTree = "<group>"; };
+		A47C48CC1C7208DC00CB6110 /* yudpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yudpsocket.c; sourceTree = "<group>"; };
+		A47C48CD1C7208DC00CB6110 /* yudpsocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = yudpsocket.swift; sourceTree = "<group>"; };
+		A47C48D41C72175F00CB6110 /* ReplyHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyHeader.swift; sourceTree = "<group>"; };
+		A47C48D61C72179100CB6110 /* Deserializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deserializable.swift; sourceTree = "<group>"; };
+		A47C48D81C7217B600CB6110 /* Serializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializable.swift; sourceTree = "<group>"; };
+		A47C48DA1C721C5B00CB6110 /* ConnectResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectResponse.swift; sourceTree = "<group>"; };
+		A47C48DC1C721EC700CB6110 /* ConnectRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectRequest.swift; sourceTree = "<group>"; };
+		A47C48DE1C7226FD00CB6110 /* SimpleBufferTest.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SimpleBufferTest.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +69,7 @@
 				A4278FC41C70A78200322A6E /* Example playgrounds */,
 				A4278FBE1C70A5F200322A6E /* zkClient4Swift-OSX */,
 				A4278FB51C70A53B00322A6E /* zkClient4Swift */,
+				A47C48C51C72088300CB6110 /* Third parties */,
 				A4278FB41C70A53B00322A6E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -69,6 +91,8 @@
 				A4278FB61C70A53B00322A6E /* zkClient4Swift.h */,
 				A4278FC21C70A76D00322A6E /* ZkClient.swift */,
 				A4278FC61C70A8AB00322A6E /* ZkSerializer.swift */,
+				A47C48D61C72179100CB6110 /* Deserializable.swift */,
+				A47C48D81C7217B600CB6110 /* Serializable.swift */,
 			);
 			path = zkClient4Swift;
 			sourceTree = "<group>";
@@ -92,6 +116,9 @@
 			isa = PBXGroup;
 			children = (
 				A4278FCF1C70D31D00322A6E /* CreateMode.swift */,
+				A47C48D41C72175F00CB6110 /* ReplyHeader.swift */,
+				A47C48DA1C721C5B00CB6110 /* ConnectResponse.swift */,
+				A47C48DC1C721EC700CB6110 /* ConnectRequest.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -111,8 +138,38 @@
 			isa = PBXGroup;
 			children = (
 				A4278FC51C70A7A000322A6E /* SimpleUsage-OSX.playground */,
+				A47C48DE1C7226FD00CB6110 /* SimpleBufferTest.playground */,
 			);
 			name = "Example playgrounds";
+			sourceTree = "<group>";
+		};
+		A47C48C51C72088300CB6110 /* Third parties */ = {
+			isa = PBXGroup;
+			children = (
+				A47C48C61C7208DC00CB6110 /* SwiftSocket */,
+			);
+			name = "Third parties";
+			path = zkClient4Swift;
+			sourceTree = "<group>";
+		};
+		A47C48C61C7208DC00CB6110 /* SwiftSocket */ = {
+			isa = PBXGroup;
+			children = (
+				A47C48C81C7208DC00CB6110 /* ysocket */,
+			);
+			path = SwiftSocket;
+			sourceTree = "<group>";
+		};
+		A47C48C81C7208DC00CB6110 /* ysocket */ = {
+			isa = PBXGroup;
+			children = (
+				A47C48C91C7208DC00CB6110 /* ysocket.swift */,
+				A47C48CA1C7208DC00CB6110 /* ytcpsocket.c */,
+				A47C48CB1C7208DC00CB6110 /* ytcpsocket.swift */,
+				A47C48CC1C7208DC00CB6110 /* yudpsocket.c */,
+				A47C48CD1C7208DC00CB6110 /* yudpsocket.swift */,
+			);
+			path = ysocket;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,11 +250,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A47C48D11C7208DC00CB6110 /* ytcpsocket.swift in Sources */,
+				A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */,
 				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,
+				A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */,
 				A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */,
+				A47C48CF1C7208DC00CB6110 /* ysocket.swift in Sources */,
+				A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */,
+				A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */,
+				A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */,
 				A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */,
+				A47C48DB1C721C5B00CB6110 /* ConnectResponse.swift in Sources */,
 				A4278FC71C70A8AB00322A6E /* ZkSerializer.swift in Sources */,
+				A47C48D21C7208DC00CB6110 /* yudpsocket.c in Sources */,
 				A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */,
+				A47C48D31C7208DC00CB6110 /* yudpsocket.swift in Sources */,
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
 				A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */,
 			);
@@ -350,6 +417,7 @@
 				A4278FBD1C70A53B00322A6E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
