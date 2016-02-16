@@ -39,6 +39,8 @@
 		A4C72A511C72F2C000771E86 /* ACL.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A501C72F2C000771E86 /* ACL.swift */; };
 		A4C72A531C72F41200771E86 /* CreateRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A521C72F41200771E86 /* CreateRequest.swift */; };
 		A4C72A551C72F6DF00771E86 /* CreateResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A541C72F6DF00771E86 /* CreateResponse.swift */; };
+		A4C72A571C73035400771E86 /* GetDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A561C73035400771E86 /* GetDataRequest.swift */; };
+		A4C72A591C73039300771E86 /* GetDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A581C73039300771E86 /* GetDataResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +80,8 @@
 		A4C72A501C72F2C000771E86 /* ACL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACL.swift; sourceTree = "<group>"; };
 		A4C72A521C72F41200771E86 /* CreateRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateRequest.swift; sourceTree = "<group>"; };
 		A4C72A541C72F6DF00771E86 /* CreateResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateResponse.swift; sourceTree = "<group>"; };
+		A4C72A561C73035400771E86 /* GetDataRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetDataRequest.swift; sourceTree = "<group>"; };
+		A4C72A581C73039300771E86 /* GetDataResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetDataResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +163,8 @@
 				A4C72A4E1C72EAA100771E86 /* DeleteRequest.swift */,
 				A4C72A521C72F41200771E86 /* CreateRequest.swift */,
 				A4C72A541C72F6DF00771E86 /* CreateResponse.swift */,
+				A4C72A561C73035400771E86 /* GetDataRequest.swift */,
+				A4C72A581C73039300771E86 /* GetDataResponse.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -310,6 +316,7 @@
 				A4C72A4D1C72D51900771E86 /* Synchronized.swift in Sources */,
 				A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */,
 				A4C72A531C72F41200771E86 /* CreateRequest.swift in Sources */,
+				A4C72A571C73035400771E86 /* GetDataRequest.swift in Sources */,
 				A47C48E21C72298400CB6110 /* zkOpCode.swift in Sources */,
 				A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */,
 				A4C72A511C72F2C000771E86 /* ACL.swift in Sources */,
@@ -322,6 +329,7 @@
 				A47C48D31C7208DC00CB6110 /* yudpsocket.swift in Sources */,
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
 				A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */,
+				A4C72A591C73039300771E86 /* GetDataResponse.swift in Sources */,
 				A4C72A411C722BC400771E86 /* GetChildrenResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

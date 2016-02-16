@@ -221,7 +221,25 @@ public class ZkClient {
      - returns: 返回的对象
      */
     public func readData(path:String,deserialize:(StreamInBuffer)->AnyObject? = {inBuffer in inBuffer.readString()}) -> AnyObject? {
-        return nil
+        
+        let getDataRequest = GetDataRequest()
+        getDataRequest.path = path
+        
+        //执行命令,并得到结果
+        guard let resposne = execute(message: getDataRequest, asType: .getData) else {
+            //TODO 这里应该需要处理错误的情况
+            return nil
+        }
+        
+        let getDataResponse = GetDataResponse()
+        getDataResponse.deserialize(StreamInBuffer(data: resposne.data))
+        
+        
+        guard let data = getDataResponse.data else {
+            return nil
+        }
+        
+        return deserialize(StreamInBuffer(data:data))
     }
     
     /**
