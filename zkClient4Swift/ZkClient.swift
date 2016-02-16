@@ -11,7 +11,7 @@ import Foundation
 
 public class ZkClient {
     
-    private var _closed = true
+    private var _closed = false
     
     private(set) public var connected = false
     
@@ -65,6 +65,11 @@ public class ZkClient {
      */
     public func connect() {
         
+        if _closed {
+            print("此链接已经被关闭了,需要重新实例化才能打开")
+            return
+        }
+        
         //打开Socket连接
         let (success,errMsg) = _connection.connect(timeout: self._sessionTimeout)
         
@@ -86,6 +91,21 @@ public class ZkClient {
      关闭连接
      */
     public func close() {
+        
+        if !self._closed {
+            return
+        }
+        
+        synchronized(_closed) { () -> Void in
+            //需要取消所有的事件订阅
+            self.unsubscribeAll()
+            
+            self._connection.close()
+            
+            self.connected = false
+        }
+        
+        self._closed = true
         
     }
     
@@ -396,6 +416,11 @@ public class ZkClient {
      */
     private func sendMessage(outBuf:StreamOutBuffer) {
         
+        if _closed {
+            //TODO
+            return
+        }
+        
         func appendLength(data:NSData) ->NSData {
             //这里在发送消息前,需要把消息的最前端加上长度
             let _data = NSMutableData()
@@ -419,6 +444,11 @@ public class ZkClient {
     
     private func asyncRecvEvent(){
         while true {
+            
+            if _closed {
+                break
+            }
+            
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
             dispatch_semaphore_wait(_handleability, DISPATCH_TIME_FOREVER)
             
