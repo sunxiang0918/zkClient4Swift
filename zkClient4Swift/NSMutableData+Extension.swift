@@ -64,17 +64,15 @@ public extension NSData {
     
     // MARK: Int32与Int64
     public func getInt(range:NSRange = NSRange(location:0,length:sizeof(UInt32))) -> Int {
-        var val: Int = 0
+        var val: UInt32 = 0
         self.getBytes(&val, range: range)
-        val = Int(CFSwapInt32BigToHost(UInt32(val)))
-        return val
+        return Int(CFSwapInt32BigToHost(val))
     }
     
     public func getLong(range:NSRange = NSRange(location:0,length:sizeof(UInt64))) -> Int {
-        var val: Int = 0
+        var val: UInt64 = 0
         self.getBytes(&val, range: range)
-        val = Int(CFSwapInt64BigToHost(UInt64(val)))
-        return val
+        return Int(CFSwapInt64BigToHost(val))
     }
 
     // MARK: Float32与Float64

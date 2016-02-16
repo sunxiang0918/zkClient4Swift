@@ -8,7 +8,7 @@ var str = "Hello, playground"
 var outBuffer = StreamOutBuffer()
 
 outBuffer.appendInt(2)
-outBuffer.appendLong(100)
+outBuffer.appendLong(11111111)
 outBuffer.appendBool(true)
 outBuffer.appendBool(false)
 outBuffer.appendString("这个是最恼火的")
@@ -25,13 +25,13 @@ let inBuffer = StreamInBuffer(data:data)
 print(inBuffer.readInt())
 ////
 print(inBuffer.readLong())
-//
+////
+print(inBuffer.readBool())
+////
 print(inBuffer.readBool())
 //
-print(inBuffer.readBool())
-
 print(inBuffer.readString()!)
-
+//
 print(inBuffer.readInt())
 
 

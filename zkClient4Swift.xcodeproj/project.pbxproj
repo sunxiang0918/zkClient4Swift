@@ -25,6 +25,11 @@
 		A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D81C7217B600CB6110 /* Serializable.swift */; };
 		A47C48DB1C721C5B00CB6110 /* ConnectResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DA1C721C5B00CB6110 /* ConnectResponse.swift */; };
 		A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DC1C721EC700CB6110 /* ConnectRequest.swift */; };
+		A47C48E01C7227E200CB6110 /* GetChildrenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DF1C7227E200CB6110 /* GetChildrenRequest.swift */; };
+		A47C48E21C72298400CB6110 /* zkOpCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48E11C72298400CB6110 /* zkOpCode.swift */; };
+		A47C48E41C722ABF00CB6110 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48E31C722ABF00CB6110 /* Response.swift */; };
+		A4C72A411C722BC400771E86 /* GetChildrenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */; };
+		A4C72A431C722DD300771E86 /* RequestHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A421C722DD300771E86 /* RequestHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +55,11 @@
 		A47C48DA1C721C5B00CB6110 /* ConnectResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectResponse.swift; sourceTree = "<group>"; };
 		A47C48DC1C721EC700CB6110 /* ConnectRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectRequest.swift; sourceTree = "<group>"; };
 		A47C48DE1C7226FD00CB6110 /* SimpleBufferTest.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SimpleBufferTest.playground; sourceTree = "<group>"; };
+		A47C48DF1C7227E200CB6110 /* GetChildrenRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetChildrenRequest.swift; sourceTree = "<group>"; };
+		A47C48E11C72298400CB6110 /* zkOpCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = zkOpCode.swift; sourceTree = "<group>"; };
+		A47C48E31C722ABF00CB6110 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
+		A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetChildrenResponse.swift; sourceTree = "<group>"; };
+		A4C72A421C722DD300771E86 /* RequestHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestHeader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +118,7 @@
 		A4278FBF1C70A6CE00322A6E /* protocol */ = {
 			isa = PBXGroup;
 			children = (
+				A47C48E11C72298400CB6110 /* zkOpCode.swift */,
 			);
 			name = protocol;
 			sourceTree = "<group>";
@@ -119,6 +130,10 @@
 				A47C48D41C72175F00CB6110 /* ReplyHeader.swift */,
 				A47C48DA1C721C5B00CB6110 /* ConnectResponse.swift */,
 				A47C48DC1C721EC700CB6110 /* ConnectRequest.swift */,
+				A47C48DF1C7227E200CB6110 /* GetChildrenRequest.swift */,
+				A47C48E31C722ABF00CB6110 /* Response.swift */,
+				A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */,
+				A4C72A421C722DD300771E86 /* RequestHeader.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -254,10 +269,14 @@
 				A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */,
 				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,
 				A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */,
+				A47C48E41C722ABF00CB6110 /* Response.swift in Sources */,
 				A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */,
+				A4C72A431C722DD300771E86 /* RequestHeader.swift in Sources */,
 				A47C48CF1C7208DC00CB6110 /* ysocket.swift in Sources */,
 				A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */,
+				A47C48E01C7227E200CB6110 /* GetChildrenRequest.swift in Sources */,
 				A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */,
+				A47C48E21C72298400CB6110 /* zkOpCode.swift in Sources */,
 				A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */,
 				A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */,
 				A47C48DB1C721C5B00CB6110 /* ConnectResponse.swift in Sources */,
@@ -267,6 +286,7 @@
 				A47C48D31C7208DC00CB6110 /* yudpsocket.swift in Sources */,
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
 				A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */,
+				A4C72A411C722BC400771E86 /* GetChildrenResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,10 +392,12 @@
 				INFOPLIST_FILE = zkClient4Swift/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.sunxiang0918.zkClient4Swift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = Debug;
 		};
@@ -392,9 +414,11 @@
 				INFOPLIST_FILE = zkClient4Swift/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = cn.sunxiang0918.zkClient4Swift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = Release;
 		};

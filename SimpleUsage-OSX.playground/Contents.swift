@@ -6,8 +6,11 @@ import Foundation
 
 let zkClient = ZkClient(serverstring: "127.0.0.1:2181")
 
-print(zkClient.connected)
+debugPrint(zkClient.connected)
 
 zkClient.connect()
 
-print(zkClient.connected)
+debugPrint(zkClient.connected)
+
+
+zkClient.getChildren("/ftengine")

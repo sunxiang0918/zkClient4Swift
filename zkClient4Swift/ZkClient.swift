@@ -66,7 +66,7 @@ public class ZkClient {
         }
         
         //打开可以处理消息的信号量
-        dispatch_semaphore_signal(_handleability);
+//        dispatch_semaphore_signal(_handleability)
         
         //发送ZK连接的命令
         self.sendConnectionRequest()
@@ -221,7 +221,20 @@ public class ZkClient {
      - returns: 子节点,如果当前节点不存在,那么返回nil
      */
     public func getChildren(path:String) -> [String]? {
-        return nil
+        
+        let getChildrenRequest = GetChildrenRequest()
+        getChildrenRequest.path = path
+        
+        //执行命令,并得到结果
+        guard let resposne = execute(message: getChildrenRequest, asType: .getChildren2) else {
+            //TODO 这里应该需要处理错误的情况
+            return nil
+        }
+        
+        let getChildrenResponse = GetChildrenResponse()
+        getChildrenResponse.deserialize(StreamInBuffer(data: resposne.data))
+        
+        return getChildrenResponse.children
     }
     
     /**
@@ -255,6 +268,34 @@ public class ZkClient {
     }
     
     /**
+     执行命令的发送,并整理响应
+     
+     - parameter msg:  消息
+     - parameter type: 事件类型
+     */
+    private func execute(message msg:Serializable,asType type:zkOpCode) -> Response? {
+        
+        //先生成请求的Header
+        let requestHeader = RequestHeader()
+        requestHeader.xid = 12321       //TODO 这里每次请求的xid应该不一样
+        requestHeader.type = type
+        
+        //构造出整个请求
+        let buffer = StreamOutBuffer()
+        requestHeader.serialize(buffer)
+        msg.serialize(buffer)
+        
+        //发送请求
+        self.sendMessage(buffer)
+        
+        //阻塞的等待结果的响应
+//        let response = 
+        
+        
+        return nil
+    }
+    
+    /**
      发送消息
      TODO 发送消息现在还是同步的,后面可能会需要改成异步的
      - parameter outBuf:
@@ -271,13 +312,15 @@ public class ZkClient {
         
         let message = appendLength(outBuf.getBuffer())
         
-        print("开始发送消息")
         let (success,errMsg) = _connection.send(data: message)
         
         if !success {
             //TODO 还没有处理失败的情况
             print("发送消息失败"+errMsg)
         }
+        
+        //打开可以处理消息的信号量
+        dispatch_semaphore_signal(_handleability)
     }
     
     private func asyncRecvEvent(){
@@ -285,14 +328,10 @@ public class ZkClient {
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
             dispatch_semaphore_wait(_handleability, DISPATCH_TIME_FOREVER)
             
-            print("开始接收消息")
-            
             //到这的肯定是可以读取内容了
-            guard let uints = _connection.read(1024, timeout: _sessionTimeout) else {
+            guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
                 continue
             }
-            
-            print("接收到消息")
             
             let data = NSData(uints: uints)
             
@@ -312,6 +351,7 @@ public class ZkClient {
                 
                 dispatch_semaphore_signal(_connsema);
             }else{
+                
                 //解析消息的头
                 let header = ReplyHeader()
                 header.deserialize(inBuf)
@@ -319,6 +359,13 @@ public class ZkClient {
                 let headerLength = header.headerLength      //获取消息头的长度
                 
                 let realData = inBuf.getData()      //获取除了头以外的所有数据
+                
+                let getChildrenResponse = GetChildrenResponse()
+                getChildrenResponse.deserialize(StreamInBuffer(data: realData))
+                
+                for child in getChildrenResponse.children {
+                    debugPrint("子节点为:\(child)")
+                }
             }
             
         }

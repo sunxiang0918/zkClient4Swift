@@ -10,11 +10,11 @@ import Foundation
 
 public class ReplyHeader:Deserializable {
     
-    private(set) var xid:Int=0
+    private(set) public var xid:Int=0
     
-    private(set) var zxid:Int=0
+    private(set) public var zxid:Int=0
     
-    private(set) var error:Int=0
+    private(set) public var error:Int=0
     
     var headerLength:Int {
         get {
