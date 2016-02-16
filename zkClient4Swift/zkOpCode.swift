@@ -56,6 +56,52 @@ public enum zkOpCode:Int {
     case error = -1
 }
 
+/**
+ ZK的异常操作码
+ 
+ - Ok:                      <#Ok description#>
+ - SystemError:             <#SystemError description#>
+ - RuntimeInconsistency:    <#RuntimeInconsistency description#>
+ - DataInconsistency:       <#DataInconsistency description#>
+ - ConnectionLoss:          <#ConnectionLoss description#>
+ - MarshallingError:        <#MarshallingError description#>
+ - Unimplemented:           <#Unimplemented description#>
+ - OperationTimeout:        <#OperationTimeout description#>
+ - BadArguments:            <#BadArguments description#>
+ - APIError:                <#APIError description#>
+ - NoNode:                  <#NoNode description#>
+ - NoAuth:                  <#NoAuth description#>
+ - BadVersion:              <#BadVersion description#>
+ - NoChildrenForEphemerals: <#NoChildrenForEphemerals description#>
+ - NodeExists:              <#NodeExists description#>
+ - NotEmpty:                <#NotEmpty description#>
+ - SessionExpired:          <#SessionExpired description#>
+ - InvalidCallback:         <#InvalidCallback description#>
+ - InvalidACL:              <#InvalidACL description#>
+ - AuthFailed:              <#AuthFailed description#>
+ */
+public enum KeeperExceptionCode:Int {
+    case Ok = 0
+    case SystemError = -1
+    case RuntimeInconsistency = -2
+    case DataInconsistency = -3
+    case ConnectionLoss = -4
+    case MarshallingError = -5
+    case Unimplemented = -6
+    case OperationTimeout = -7
+    case BadArguments = -8
+    case APIError = -100
+    case NoNode = -101
+    case NoAuth = -102
+    case BadVersion = -103
+    case NoChildrenForEphemerals = -108
+    case NodeExists = -110
+    case NotEmpty = -111
+    case SessionExpired = -112
+    case InvalidCallback = -113
+    case InvalidACL = -114
+    case AuthFailed = -115
+}
 
 public enum Perms:Int {
     case READ = 1

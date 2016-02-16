@@ -60,6 +60,9 @@ public class ZkClient {
         }
     }
     
+    /**
+     打开连接
+     */
     public func connect() {
         
         //打开Socket连接
@@ -77,6 +80,13 @@ public class ZkClient {
         
         //等待连接成功
         dispatch_semaphore_wait(_connsema, DISPATCH_TIME_FOREVER);
+    }
+    
+    /**
+     关闭连接
+     */
+    public func close() {
+        
     }
     
     // MARK: 事件的订阅相关
@@ -182,6 +192,14 @@ public class ZkClient {
         guard let resposne = execute(message: createRequest, asType: .create) else {
             //TODO 这里应该需要处理错误的情况
             return ""
+        }
+        
+        if  resposne.header.error == KeeperExceptionCode.NoNode.rawValue && createParents {
+            //表示没有父节点,需要根据判断来创建父节点
+            
+            let parentDir = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
+            try self.create(parentDir, data: nil, model: model, createParents: createParents, serialize: serialize)
+            return try self.create(path, data: data, model: model, createParents: createParents, serialize: serialize)
         }
         
         let createResponse = CreateResponse()
@@ -413,7 +431,6 @@ public class ZkClient {
                 
                 dispatch_semaphore_signal(_connsema);
             }else{
-                
                 //解析消息的头
                 let header = ReplyHeader()
                 header.deserialize(inBuf)

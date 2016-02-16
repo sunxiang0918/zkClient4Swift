@@ -12,12 +12,14 @@ public extension NSMutableData {
     
     // MARK: Int32与Int64
     public func appendInt(value:Int){
-        var networkOrderVal = CFSwapInt32HostToBig(UInt32(value))
+        var networkOrderVal = UInt32(bitPattern:Int32(value)).bigEndian
+//        var networkOrderVal = CFSwapInt32HostToBig(UInt32(bitPattern:Int32(value)))
         self.appendBytes(&networkOrderVal, length: sizeof(UInt32))
     }
     
     public func appendLong(value:Int) {
-        var networkOrderVal = CFSwapInt64HostToBig(UInt64(value));
+        var networkOrderVal = UInt64(bitPattern:Int64(value)).bigEndian
+//        var networkOrderVal = CFSwapInt64HostToBig(UInt64(value));
         self.appendBytes(&networkOrderVal, length: sizeof(UInt64))
     }
     
@@ -84,13 +86,15 @@ public extension NSData {
     public func getInt(range:NSRange = NSRange(location:0,length:sizeof(UInt32))) -> Int {
         var val: UInt32 = 0
         self.getBytes(&val, range: range)
-        return Int(CFSwapInt32BigToHost(val))
+//        return Int(CFSwapInt32BigToHost(val))
+        return Int(Int32(bitPattern:val.bigEndian))
     }
     
     public func getLong(range:NSRange = NSRange(location:0,length:sizeof(UInt64))) -> Int {
         var val: UInt64 = 0
         self.getBytes(&val, range: range)
-        return Int(CFSwapInt64BigToHost(val))
+//        return Int(CFSwapInt64BigToHost(val))
+        return Int(Int64(bitPattern:val.bigEndian))
     }
 
     // MARK: Float32与Float64

@@ -3,11 +3,16 @@
 import zkClient4Swift
 import Foundation
 
-var str = "Hello, playground"
+var path = "/Hello2/create"
+
+let range = path.rangeOfString("/", options: .BackwardsSearch)!
+path.startIndex.distanceTo(range.startIndex)
+let parentDir = path.substringToIndex(range.startIndex)
 
 var outBuffer = StreamOutBuffer()
 
-outBuffer.appendInt(2)
+outBuffer.appendInt(-1)
+outBuffer.appendLong(-5)
 outBuffer.appendLong(11111111)
 outBuffer.appendBool(true)
 outBuffer.appendBool(false)
@@ -23,6 +28,8 @@ print(data)
 let inBuffer = StreamInBuffer(data:data)
 
 print(inBuffer.readInt())
+////
+print(inBuffer.readLong())
 ////
 print(inBuffer.readLong())
 ////
