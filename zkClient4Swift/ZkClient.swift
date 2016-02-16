@@ -180,7 +180,18 @@ public class ZkClient {
      - returns: 删除成功返回true,失败返回false
      */
     public func delete(path:String) -> Bool {
-        return false
+        
+        let deleteRequest = DeleteRequest()
+        deleteRequest.path = path
+        
+        //执行命令,并得到结果
+        guard let resposne = execute(message: deleteRequest, asType: .delete) else {
+            //TODO 这里应该需要处理错误的情况
+            return false
+        }
+        
+        return resposne.header.error == 0
+        
     }
     
     /**

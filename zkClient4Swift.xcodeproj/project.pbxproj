@@ -35,6 +35,7 @@
 		A4C72A491C72D1B800771E86 /* ExistsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A481C72D1B800771E86 /* ExistsResponse.swift */; };
 		A4C72A4B1C72D26A00771E86 /* Stat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A4A1C72D26A00771E86 /* Stat.swift */; };
 		A4C72A4D1C72D51900771E86 /* Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A4C1C72D51900771E86 /* Synchronized.swift */; };
+		A4C72A4F1C72EAA100771E86 /* DeleteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A4E1C72EAA100771E86 /* DeleteRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,7 @@
 		A4C72A481C72D1B800771E86 /* ExistsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistsResponse.swift; sourceTree = "<group>"; };
 		A4C72A4A1C72D26A00771E86 /* Stat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stat.swift; sourceTree = "<group>"; };
 		A4C72A4C1C72D51900771E86 /* Synchronized.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronized.swift; sourceTree = "<group>"; };
+		A4C72A4E1C72EAA100771E86 /* DeleteRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +149,7 @@
 				A4C72A461C72D10A00771E86 /* ExistsRequest.swift */,
 				A4C72A481C72D1B800771E86 /* ExistsResponse.swift */,
 				A4C72A4A1C72D26A00771E86 /* Stat.swift */,
+				A4C72A4E1C72EAA100771E86 /* DeleteRequest.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 			files = (
 				A47C48D11C7208DC00CB6110 /* ytcpsocket.swift in Sources */,
 				A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */,
+				A4C72A4F1C72EAA100771E86 /* DeleteRequest.swift in Sources */,
 				A4C72A451C72BF1200771E86 /* MessageReceiveQueue.swift in Sources */,
 				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,
 				A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */,

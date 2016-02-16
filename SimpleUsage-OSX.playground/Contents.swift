@@ -21,3 +21,5 @@ for child in  children! {
 
 print("节点是否存在:\(zkClient.exists("/aaaaaaa"))")
 print("节点是否存在:\(zkClient.exists("/ftengine"))")
+
+print("是否删除节点成功:\(zkClient.delete("/Hello/delete"))")
