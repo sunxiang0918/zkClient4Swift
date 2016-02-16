@@ -167,9 +167,28 @@ public class ZkClient {
     
     - returns: 节点的完整路径
     */
-    public func create(path:String,data:AnyObject? = nil,model:CreateMode,createParents:Bool = false)throws -> String{
+    public func create(path:String,data:AnyObject? = nil,model:CreateMode,createParents:Bool = false,serialize:(AnyObject?,StreamOutBuffer)->Void = {(obj:AnyObject?,outBuffer:StreamOutBuffer) in outBuffer.appendString((obj ?? "") as! String) })throws -> String{
         
-        return ""
+        let createRequest = CreateRequest()
+        createRequest.path = path
+        let _outBuffer = StreamOutBuffer()
+        serialize(data,_outBuffer)
+        
+        createRequest.data = _outBuffer.getBuffer()
+        createRequest.flag = model
+        createRequest.acls = Ids.OPEN_ACL_UNSAFE
+        
+        //执行命令,并得到结果
+        guard let resposne = execute(message: createRequest, asType: .create) else {
+            //TODO 这里应该需要处理错误的情况
+            return ""
+        }
+        
+        let createResponse = CreateResponse()
+        createResponse.deserialize(StreamInBuffer(data: resposne.data))
+        
+        return createResponse.path ?? ""
+        
     }
     
     /**

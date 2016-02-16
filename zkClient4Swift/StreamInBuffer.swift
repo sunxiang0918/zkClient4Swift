@@ -60,6 +60,10 @@ public class StreamInBuffer {
         }
     }
     
+    public func readRecode(deserializable:Deserializable) {
+        deserializable.deserialize(self)
+    }
+    
     public func getData() ->NSData {
         return NSData(data: _data.subdataWithRange(NSRange(location: _pos, length: _data.length-_pos)))
     }

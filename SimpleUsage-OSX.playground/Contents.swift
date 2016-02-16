@@ -23,3 +23,8 @@ print("节点是否存在:\(zkClient.exists("/aaaaaaa"))")
 print("节点是否存在:\(zkClient.exists("/ftengine"))")
 
 print("是否删除节点成功:\(zkClient.delete("/Hello/delete"))")
+
+
+try zkClient.create("/Hello/create2", model: CreateMode.PERSISTENT)
+
+print("节点创建结果:\(try zkClient.create("/Hello/create", data: "试一试中文", model: CreateMode.PERSISTENT))")

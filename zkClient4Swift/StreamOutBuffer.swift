@@ -32,6 +32,17 @@ public class StreamOutBuffer {
         _data.appendString(val)
     }
     
+    public func appendBuffer(val:NSData?){
+        if let val = val {
+            _data.appendData(val)
+        }
+//        _data.appendBuffer(val)
+    }
+    
+    public func appendRecord(val:Serializable) {
+        val.serialize(self)
+    }
+    
     public func getBuffer() -> NSData {
         return _data
     }

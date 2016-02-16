@@ -8,14 +8,14 @@
 
 import Foundation
 
-let PERSISTENT = CreateMode.MODE(0,false,false)
-let PERSISTENT_SEQUENTIAL = CreateMode.MODE(2,false,true)
-let EPHEMERAL = CreateMode.MODE(1,true,false)
-let EPHEMERAL_SEQUENTIAL = CreateMode.MODE(3,true,true)
-
 public enum CreateMode {
     
     case MODE(Int,Bool,Bool)
+    
+    public static let PERSISTENT = CreateMode.MODE(0,false,false)
+    public static let PERSISTENT_SEQUENTIAL = CreateMode.MODE(2,false,true)
+    public static let EPHEMERAL = CreateMode.MODE(1,true,false)
+    public static let EPHEMERAL_SEQUENTIAL = CreateMode.MODE(3,true,true)
     
     func isPersistent() -> Bool{
         switch self {
@@ -40,10 +40,10 @@ public enum CreateMode {
     
     func fromFlag(flag:Int)throws -> CreateMode {
         switch flag {
-        case 0: return PERSISTENT
-        case 1: return PERSISTENT_SEQUENTIAL
-        case 2: return EPHEMERAL
-        case 3: return EPHEMERAL_SEQUENTIAL
+        case 0: return CreateMode.PERSISTENT
+        case 1: return CreateMode.PERSISTENT_SEQUENTIAL
+        case 2: return CreateMode.EPHEMERAL
+        case 3: return CreateMode.EPHEMERAL_SEQUENTIAL
         default: throw AppException.IllegalArgumentException
         }
     }

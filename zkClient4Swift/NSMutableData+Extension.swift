@@ -53,6 +53,24 @@ public extension NSMutableData {
         //放入NSData中
         self.appendData(data!)
     }
+    
+    public func appendBuffer(val:NSData?) {
+        
+        guard let val = val else {
+            //放入字符串的长度
+            self.appendInt(0)
+            return
+        }
+        
+        //获取到字节的长度,使用某一种编码
+        let pLength : Int = val.length
+        
+        //放入字符串的长度
+        self.appendInt(pLength)
+        
+        //放入NSData中
+        self.appendData(val)
+    }
 
 }
 
