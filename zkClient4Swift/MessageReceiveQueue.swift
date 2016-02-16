@@ -84,20 +84,6 @@ public class MessageReceiveQueue {
         lock.unlockWithCondition(ReceiveState.ARRIVED.rawValue)
     }
     
-    /**
-     同步代码块,据说是有问题的: http://stackoverflow.com/questions/24045895/what-is-the-swift-equivalent-to-objective-cs-synchronized
-     
-     - parameter lock: 锁对象
-     - parameter block: 同步代码块
-     */
-    private func synchronized( lock:AnyObject, block:() -> Void ){
-        objc_sync_enter(lock)
-        defer {
-            objc_sync_exit(lock)
-        }
-        
-        block()
-    }
 }
 
 enum ReceiveState:Int {

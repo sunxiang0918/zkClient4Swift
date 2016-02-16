@@ -29,6 +29,8 @@ public class ZkClient {
     
     private let _receiveMessageQueue = MessageReceiveQueue()
     
+    private var _xid = 0
+    
     public init(serverstring:String,connectionTimeout:Int = 2147483647,sessionTimeout:Int = 30000) {
         
         _connectionTimeout = connectionTimeout
@@ -292,7 +294,7 @@ public class ZkClient {
         
         //先生成请求的Header
         let requestHeader = RequestHeader()
-        requestHeader.xid = 12321       //TODO 这里每次请求的xid应该不一样
+        requestHeader.xid = getAndIncrementXid()
         requestHeader.type = type
         
         //构造出整个请求
@@ -379,5 +381,16 @@ public class ZkClient {
             }
             
         }
+    }
+    
+    private func getAndIncrementXid() -> Int {
+        
+        var xid = 0
+        synchronized(_xid) { () -> Void in
+            xid = self._xid + 1
+            self._xid = Int(xid)
+        }
+        
+        return xid
     }
 }

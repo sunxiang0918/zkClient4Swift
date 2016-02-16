@@ -34,6 +34,7 @@
 		A4C72A471C72D10A00771E86 /* ExistsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A461C72D10A00771E86 /* ExistsRequest.swift */; };
 		A4C72A491C72D1B800771E86 /* ExistsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A481C72D1B800771E86 /* ExistsResponse.swift */; };
 		A4C72A4B1C72D26A00771E86 /* Stat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A4A1C72D26A00771E86 /* Stat.swift */; };
+		A4C72A4D1C72D51900771E86 /* Synchronized.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A4C1C72D51900771E86 /* Synchronized.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		A4C72A461C72D10A00771E86 /* ExistsRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistsRequest.swift; sourceTree = "<group>"; };
 		A4C72A481C72D1B800771E86 /* ExistsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistsResponse.swift; sourceTree = "<group>"; };
 		A4C72A4A1C72D26A00771E86 /* Stat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stat.swift; sourceTree = "<group>"; };
+		A4C72A4C1C72D51900771E86 /* Synchronized.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Synchronized.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				A4278FCC1C70BE6D00322A6E /* Exceptions.swift */,
 				A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */,
 				A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */,
+				A4C72A4C1C72D51900771E86 /* Synchronized.swift */,
 			);
 			name = commons;
 			sourceTree = "<group>";
@@ -291,6 +294,7 @@
 				A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */,
 				A47C48E01C7227E200CB6110 /* GetChildrenRequest.swift in Sources */,
 				A4C72A4B1C72D26A00771E86 /* Stat.swift in Sources */,
+				A4C72A4D1C72D51900771E86 /* Synchronized.swift in Sources */,
 				A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */,
 				A47C48E21C72298400CB6110 /* zkOpCode.swift in Sources */,
 				A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */,
