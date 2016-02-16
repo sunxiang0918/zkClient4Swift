@@ -27,6 +27,8 @@ public class ZkClient {
     //是否能处理的一个线程同步的信号量
     private var _handleability = dispatch_semaphore_create(0)
     
+    private let _receiveMessageQueue = MessageReceiveQueue()
+    
     public init(serverstring:String,connectionTimeout:Int = 2147483647,sessionTimeout:Int = 30000) {
         
         _connectionTimeout = connectionTimeout
@@ -289,10 +291,7 @@ public class ZkClient {
         self.sendMessage(buffer)
         
         //阻塞的等待结果的响应
-//        let response = 
-        
-        
-        return nil
+        return _receiveMessageQueue.waitForResponse(requestHeader.xid)
     }
     
     /**
@@ -356,16 +355,14 @@ public class ZkClient {
                 let header = ReplyHeader()
                 header.deserialize(inBuf)
                 
-                let headerLength = header.headerLength      //获取消息头的长度
+//                let headerLength = header.headerLength      //获取消息头的长度
                 
                 let realData = inBuf.getData()      //获取除了头以外的所有数据
                 
-                let getChildrenResponse = GetChildrenResponse()
-                getChildrenResponse.deserialize(StreamInBuffer(data: realData))
+                let response = Response(header: header, data: realData)
                 
-                for child in getChildrenResponse.children {
-                    debugPrint("子节点为:\(child)")
-                }
+                _receiveMessageQueue.appendResponse(response, forXid: header.xid)
+                
             }
             
         }

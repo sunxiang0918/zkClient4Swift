@@ -30,6 +30,7 @@
 		A47C48E41C722ABF00CB6110 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48E31C722ABF00CB6110 /* Response.swift */; };
 		A4C72A411C722BC400771E86 /* GetChildrenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */; };
 		A4C72A431C722DD300771E86 /* RequestHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A421C722DD300771E86 /* RequestHeader.swift */; };
+		A4C72A451C72BF1200771E86 /* MessageReceiveQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		A47C48E31C722ABF00CB6110 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetChildrenResponse.swift; sourceTree = "<group>"; };
 		A4C72A421C722DD300771E86 /* RequestHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestHeader.swift; sourceTree = "<group>"; };
+		A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReceiveQueue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +147,7 @@
 				A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */,
 				A4278FCC1C70BE6D00322A6E /* Exceptions.swift */,
 				A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */,
+				A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */,
 			);
 			name = commons;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 			files = (
 				A47C48D11C7208DC00CB6110 /* ytcpsocket.swift in Sources */,
 				A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */,
+				A4C72A451C72BF1200771E86 /* MessageReceiveQueue.swift in Sources */,
 				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,
 				A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */,
 				A47C48E41C722ABF00CB6110 /* Response.swift in Sources */,

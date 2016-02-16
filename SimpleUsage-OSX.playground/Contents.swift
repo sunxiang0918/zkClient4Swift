@@ -13,4 +13,8 @@ zkClient.connect()
 debugPrint(zkClient.connected)
 
 
-zkClient.getChildren("/ftengine")
+let children = zkClient.getChildren("/ftengine")
+
+for child in  children! {
+    print("子节点:\(child)")
+}
