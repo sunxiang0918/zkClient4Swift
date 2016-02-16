@@ -212,7 +212,20 @@ public class ZkClient {
      - returns: 存在返回true,不存在返回false
      */
     public func exists(path:String) -> Bool {
-        return false
+        
+        let existsRequest = ExistsRequest()
+        existsRequest.path = path
+        
+        //执行命令,并得到结果
+        guard let resposne = execute(message: existsRequest, asType: .exists) else {
+            //TODO 这里应该需要处理错误的情况
+            return false
+        }
+        
+        let existsResponse = ExistsResponse()
+        existsResponse.deserialize(StreamInBuffer(data: resposne.data))
+        
+        return existsResponse.exists
     }
     
     /**

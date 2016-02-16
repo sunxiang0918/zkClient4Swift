@@ -18,3 +18,6 @@ let children = zkClient.getChildren("/ftengine")
 for child in  children! {
     print("子节点:\(child)")
 }
+
+print("节点是否存在:\(zkClient.exists("/aaaaaaa"))")
+print("节点是否存在:\(zkClient.exists("/ftengine"))")

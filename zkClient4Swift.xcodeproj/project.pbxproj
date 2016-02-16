@@ -31,6 +31,9 @@
 		A4C72A411C722BC400771E86 /* GetChildrenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */; };
 		A4C72A431C722DD300771E86 /* RequestHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A421C722DD300771E86 /* RequestHeader.swift */; };
 		A4C72A451C72BF1200771E86 /* MessageReceiveQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */; };
+		A4C72A471C72D10A00771E86 /* ExistsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A461C72D10A00771E86 /* ExistsRequest.swift */; };
+		A4C72A491C72D1B800771E86 /* ExistsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A481C72D1B800771E86 /* ExistsResponse.swift */; };
+		A4C72A4B1C72D26A00771E86 /* Stat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A4A1C72D26A00771E86 /* Stat.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +65,9 @@
 		A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetChildrenResponse.swift; sourceTree = "<group>"; };
 		A4C72A421C722DD300771E86 /* RequestHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestHeader.swift; sourceTree = "<group>"; };
 		A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReceiveQueue.swift; sourceTree = "<group>"; };
+		A4C72A461C72D10A00771E86 /* ExistsRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistsRequest.swift; sourceTree = "<group>"; };
+		A4C72A481C72D1B800771E86 /* ExistsResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistsResponse.swift; sourceTree = "<group>"; };
+		A4C72A4A1C72D26A00771E86 /* Stat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stat.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +142,9 @@
 				A47C48E31C722ABF00CB6110 /* Response.swift */,
 				A4C72A401C722BC400771E86 /* GetChildrenResponse.swift */,
 				A4C72A421C722DD300771E86 /* RequestHeader.swift */,
+				A4C72A461C72D10A00771E86 /* ExistsRequest.swift */,
+				A4C72A481C72D1B800771E86 /* ExistsResponse.swift */,
+				A4C72A4A1C72D26A00771E86 /* Stat.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -275,10 +284,13 @@
 				A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */,
 				A47C48E41C722ABF00CB6110 /* Response.swift in Sources */,
 				A4278FCB1C70AA8C00322A6E /* StreamInBuffer.swift in Sources */,
+				A4C72A471C72D10A00771E86 /* ExistsRequest.swift in Sources */,
+				A4C72A491C72D1B800771E86 /* ExistsResponse.swift in Sources */,
 				A4C72A431C722DD300771E86 /* RequestHeader.swift in Sources */,
 				A47C48CF1C7208DC00CB6110 /* ysocket.swift in Sources */,
 				A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */,
 				A47C48E01C7227E200CB6110 /* GetChildrenRequest.swift in Sources */,
+				A4C72A4B1C72D26A00771E86 /* Stat.swift in Sources */,
 				A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */,
 				A47C48E21C72298400CB6110 /* zkOpCode.swift in Sources */,
 				A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */,
