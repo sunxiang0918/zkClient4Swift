@@ -15,7 +15,7 @@ public class ZkClient {
     
     private(set) public var connected = false
     
-    private var _connection:TCPClient
+    private var _connection:SimpleSocket
     
     private var _connectionTimeout:Int
     
@@ -49,7 +49,7 @@ public class ZkClient {
         print("链接地址:addr:\(host) port:\(port)")
         
         //TODO 暂时还不支持集群的连接
-        _connection = TCPClient(addr: host, port: port)
+        _connection = SimpleSocket(addr: host, port: port)
         
         //创建消息接收监听的信号量
         _connsema = dispatch_semaphore_create(0)
@@ -76,9 +76,6 @@ public class ZkClient {
         if  !success {
             print("打开连接失败"+errMsg)
         }
-        
-        //打开可以处理消息的信号量
-//        dispatch_semaphore_signal(_handleability)
         
         //发送ZK连接的命令
         self.sendConnectionRequest()
@@ -482,6 +479,17 @@ public class ZkClient {
 //                let headerLength = header.headerLength      //获取消息头的长度
                 
                 let realData = inBuf.getData()      //获取除了头以外的所有数据
+                
+                // 根据xid的不同,确定不同的事件
+                switch header.xid {
+                case -1:
+                    //这里是消息的通知
+                    return
+                case -2:
+                    //这里是Ping的结果
+                    return
+                default:break
+                }
                 
                 let response = Response(header: header, data: realData)
                 

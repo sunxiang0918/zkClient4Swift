@@ -14,11 +14,6 @@
 		A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCC1C70BE6D00322A6E /* Exceptions.swift */; };
 		A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCF1C70D31D00322A6E /* CreateMode.swift */; };
 		A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */; };
-		A47C48CF1C7208DC00CB6110 /* ysocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48C91C7208DC00CB6110 /* ysocket.swift */; };
-		A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CA1C7208DC00CB6110 /* ytcpsocket.c */; };
-		A47C48D11C7208DC00CB6110 /* ytcpsocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CB1C7208DC00CB6110 /* ytcpsocket.swift */; };
-		A47C48D21C7208DC00CB6110 /* yudpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CC1C7208DC00CB6110 /* yudpsocket.c */; };
-		A47C48D31C7208DC00CB6110 /* yudpsocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48CD1C7208DC00CB6110 /* yudpsocket.swift */; };
 		A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D41C72175F00CB6110 /* ReplyHeader.swift */; };
 		A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D61C72179100CB6110 /* Deserializable.swift */; };
 		A47C48D91C7217B600CB6110 /* Serializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D81C7217B600CB6110 /* Serializable.swift */; };
@@ -41,6 +36,7 @@
 		A4C72A571C73035400771E86 /* GetDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A561C73035400771E86 /* GetDataRequest.swift */; };
 		A4C72A591C73039300771E86 /* GetDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A581C73039300771E86 /* GetDataResponse.swift */; };
 		A4C72A5B1C731B4A00771E86 /* SetDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A5A1C731B4A00771E86 /* SetDataRequest.swift */; };
+		A4C72A5D1C733AAC00771E86 /* SimpleSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A5C1C733AAC00771E86 /* SimpleSocket.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,11 +50,6 @@
 		A4278FCC1C70BE6D00322A6E /* Exceptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Exceptions.swift; sourceTree = "<group>"; };
 		A4278FCF1C70D31D00322A6E /* CreateMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateMode.swift; sourceTree = "<group>"; };
 		A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableData+Extension.swift"; sourceTree = "<group>"; };
-		A47C48C91C7208DC00CB6110 /* ysocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ysocket.swift; sourceTree = "<group>"; };
-		A47C48CA1C7208DC00CB6110 /* ytcpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ytcpsocket.c; sourceTree = "<group>"; };
-		A47C48CB1C7208DC00CB6110 /* ytcpsocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ytcpsocket.swift; sourceTree = "<group>"; };
-		A47C48CC1C7208DC00CB6110 /* yudpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yudpsocket.c; sourceTree = "<group>"; };
-		A47C48CD1C7208DC00CB6110 /* yudpsocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = yudpsocket.swift; sourceTree = "<group>"; };
 		A47C48D41C72175F00CB6110 /* ReplyHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyHeader.swift; sourceTree = "<group>"; };
 		A47C48D61C72179100CB6110 /* Deserializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deserializable.swift; sourceTree = "<group>"; };
 		A47C48D81C7217B600CB6110 /* Serializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializable.swift; sourceTree = "<group>"; };
@@ -82,6 +73,7 @@
 		A4C72A561C73035400771E86 /* GetDataRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetDataRequest.swift; sourceTree = "<group>"; };
 		A4C72A581C73039300771E86 /* GetDataResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetDataResponse.swift; sourceTree = "<group>"; };
 		A4C72A5A1C731B4A00771E86 /* SetDataRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetDataRequest.swift; sourceTree = "<group>"; };
+		A4C72A5C1C733AAC00771E86 /* SimpleSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleSocket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +170,7 @@
 				A4278FD11C71F09300322A6E /* NSMutableData+Extension.swift */,
 				A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */,
 				A4C72A4C1C72D51900771E86 /* Synchronized.swift */,
+				A4C72A5C1C733AAC00771E86 /* SimpleSocket.swift */,
 			);
 			name = commons;
 			sourceTree = "<group>";
@@ -194,30 +187,9 @@
 		A47C48C51C72088300CB6110 /* Third parties */ = {
 			isa = PBXGroup;
 			children = (
-				A47C48C61C7208DC00CB6110 /* SwiftSocket */,
 			);
 			name = "Third parties";
 			path = zkClient4Swift;
-			sourceTree = "<group>";
-		};
-		A47C48C61C7208DC00CB6110 /* SwiftSocket */ = {
-			isa = PBXGroup;
-			children = (
-				A47C48C81C7208DC00CB6110 /* ysocket */,
-			);
-			path = SwiftSocket;
-			sourceTree = "<group>";
-		};
-		A47C48C81C7208DC00CB6110 /* ysocket */ = {
-			isa = PBXGroup;
-			children = (
-				A47C48C91C7208DC00CB6110 /* ysocket.swift */,
-				A47C48CA1C7208DC00CB6110 /* ytcpsocket.c */,
-				A47C48CB1C7208DC00CB6110 /* ytcpsocket.swift */,
-				A47C48CC1C7208DC00CB6110 /* yudpsocket.c */,
-				A47C48CD1C7208DC00CB6110 /* yudpsocket.swift */,
-			);
-			path = ysocket;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -299,9 +271,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4C72A5B1C731B4A00771E86 /* SetDataRequest.swift in Sources */,
-				A47C48D11C7208DC00CB6110 /* ytcpsocket.swift in Sources */,
 				A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */,
 				A4C72A4F1C72EAA100771E86 /* DeleteRequest.swift in Sources */,
+				A4C72A5D1C733AAC00771E86 /* SimpleSocket.swift in Sources */,
 				A4C72A451C72BF1200771E86 /* MessageReceiveQueue.swift in Sources */,
 				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,
 				A47C48DD1C721EC700CB6110 /* ConnectRequest.swift in Sources */,
@@ -310,7 +282,6 @@
 				A4C72A471C72D10A00771E86 /* ExistsRequest.swift in Sources */,
 				A4C72A491C72D1B800771E86 /* ExistsResponse.swift in Sources */,
 				A4C72A431C722DD300771E86 /* RequestHeader.swift in Sources */,
-				A47C48CF1C7208DC00CB6110 /* ysocket.swift in Sources */,
 				A47C48D71C72179100CB6110 /* Deserializable.swift in Sources */,
 				A47C48E01C7227E200CB6110 /* GetChildrenRequest.swift in Sources */,
 				A4C72A4B1C72D26A00771E86 /* Stat.swift in Sources */,
@@ -319,14 +290,11 @@
 				A4C72A531C72F41200771E86 /* CreateRequest.swift in Sources */,
 				A4C72A571C73035400771E86 /* GetDataRequest.swift in Sources */,
 				A47C48E21C72298400CB6110 /* zkOpCode.swift in Sources */,
-				A47C48D01C7208DC00CB6110 /* ytcpsocket.c in Sources */,
 				A4C72A511C72F2C000771E86 /* ACL.swift in Sources */,
 				A4278FCD1C70BE6D00322A6E /* Exceptions.swift in Sources */,
 				A4C72A551C72F6DF00771E86 /* CreateResponse.swift in Sources */,
 				A47C48DB1C721C5B00CB6110 /* ConnectResponse.swift in Sources */,
-				A47C48D21C7208DC00CB6110 /* yudpsocket.c in Sources */,
 				A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */,
-				A47C48D31C7208DC00CB6110 /* yudpsocket.swift in Sources */,
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
 				A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */,
 				A4C72A591C73039300771E86 /* GetDataResponse.swift in Sources */,
