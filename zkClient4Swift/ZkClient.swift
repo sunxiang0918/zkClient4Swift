@@ -227,7 +227,7 @@ public class ZkClient {
             return false
         }
         
-        return resposne.header.error == 0
+        return resposne.header.error == KeeperExceptionCode.Ok.rawValue
         
     }
     
@@ -268,8 +268,22 @@ public class ZkClient {
      
      - throws:
      */
-    public func writeData(path:String,data:AnyObject? = nil)throws -> Void {
+    public func writeData(path:String,data:AnyObject? = nil,serialize:(AnyObject?,StreamOutBuffer)->Void = {(obj:AnyObject?,outBuffer:StreamOutBuffer) in outBuffer.appendString((obj ?? "") as! String) })throws -> Bool {
         
+        let setDataRequest = SetDataRequest()
+        
+        setDataRequest.path = path
+        let _outBuffer = StreamOutBuffer()
+        serialize(data,_outBuffer)
+        setDataRequest.data = _outBuffer.getBuffer()
+        
+        //执行命令,并得到结果
+        guard let resposne = execute(message: setDataRequest, asType: .setData) else {
+            //TODO 这里应该需要处理错误的情况
+            return false
+        }
+        
+        return resposne.header.error == KeeperExceptionCode.Ok.rawValue
     }
     
     /**

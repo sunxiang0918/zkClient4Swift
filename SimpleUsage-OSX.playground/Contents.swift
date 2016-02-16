@@ -33,3 +33,9 @@ print("节点创建结果:\(try zkClient.create("/Hello/create", data: "试一�
 
 print("获取节点数据:\(zkClient.readData("/Hello/create"))")
 print("获取节点数据:\(zkClient.readData("/Hello/create2"))")
+
+try zkClient.writeData("/Hello/create2",data: "试一试写入数据")
+
+print("写入后获取节点数据:\(zkClient.readData("/Hello/create2"))")
+
+print("获取节点数据:\(zkClient.readData("/ftengine/workspace/entity.indexmeta.xml"))")
