@@ -36,6 +36,19 @@ class ViewController: NSViewController {
 
     }
     
+    @IBOutlet weak var pathField: NSTextField!
+    
+    @IBAction func getDataAction(sender: NSButton) {
+        if !zkClient.connected {
+            return
+        }
+        
+        let value = zkClient.readData(pathField.stringValue) as? String
+        
+        textView.string = value
+    }
+    
+    @IBOutlet var textView: NSTextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()

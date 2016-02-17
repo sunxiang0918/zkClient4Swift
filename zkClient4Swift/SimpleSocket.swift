@@ -126,11 +126,11 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
                 hasBytesAvailableDelegate?(aStream)
                 break
             case NSStreamEvent.EndEncountered:
-//                print("接收到EndEncountered事件:\(aStream)")
+                print("接收到EndEncountered事件:\(aStream) error:\(aStream.streamError)")
                 endEncounteredDelegate?(aStream)
                 break
             case NSStreamEvent.ErrorOccurred:
-//                print("接收到ErrorOccurred事件:\(aStream)")
+                print("接收到ErrorOccurred事件:\(aStream) error:\(aStream.streamError)")
                 errorOccurredDelegate?(aStream)
                 break
         default:
