@@ -14,8 +14,14 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
     private(set) var port:Int
     
     private(set) var connected:Bool = false
+
+    public var hasSpaceAvailableDelegate:((NSStream) -> Void)?
+    public var hasBytesAvailableDelegate:((NSStream) -> Void)?
+    public var endEncounteredDelegate:((NSStream) -> Void)?
+    public var errorOccurredDelegate:((NSStream) -> Void)?
     
-    var delegate:NSStreamDelegate?
+    private var _readStream:Unmanaged<CFReadStream>?
+    private var _writeStream:Unmanaged<CFWriteStream>?
     
     private var inputStream:NSInputStream?
     private var outputStream:NSOutputStream?
@@ -31,25 +37,24 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
     }
     
     public func connect(timeout t:Int)->(Bool,String){
-     
-        NSStream.getStreamsToHostWithName(addr, port: port, inputStream: &inputStream, outputStream: &outputStream)
+
         
+        NSStream.getStreamsToHostWithName(addr, port: port, inputStream: &inputStream, outputStream: &outputStream)
+
         guard let inputStream = inputStream,outputStream = outputStream else {
             //这里说明没有开启流
             return (false,"Can not open stream")
         }
-        
+
         inputStream.delegate = self
         outputStream.delegate = self
         
-        let loop = NSRunLoop.currentRunLoop()
-            
-        inputStream.scheduleInRunLoop(loop, forMode: NSDefaultRunLoopMode)
-        outputStream.scheduleInRunLoop(loop, forMode: NSDefaultRunLoopMode)
+        inputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        outputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         
         inputStream.open()
         outputStream.open()
-        
+
         return (true,"")
     }
     
@@ -95,9 +100,14 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
         
         var buff:[UInt8] = [UInt8](count:expectlen,repeatedValue:0x0)
         
-        inputStream.read(&buff, maxLength: expectlen)
+        let len = inputStream.read(&buff, maxLength: expectlen)
         
-        return buff
+        if len > 0 {
+            let result = buff[0..<len]
+            return Array(result)
+        }
+        
+        return nil
     }
     
     
@@ -105,18 +115,25 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
     public func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
         switch (eventCode) {
             case NSStreamEvent.HasSpaceAvailable:
-                print("接收到 HasSpaceAvailable 事件")
+                print("接收到HasSpaceAvailable事件:\(aStream)")
+                hasSpaceAvailableDelegate?(aStream)
                 break
             case NSStreamEvent.HasBytesAvailable:
+                print("接收到HasBytesAvailable事件:\(aStream)")
+                hasBytesAvailableDelegate?(aStream)
                 break
             case NSStreamEvent.EndEncountered:
+                print("接收到EndEncountered事件:\(aStream)")
+                endEncounteredDelegate?(aStream)
                 break
             case NSStreamEvent.ErrorOccurred:
-                print("接收到 ErrorOccurred 事件")
+                print("接收到ErrorOccurred事件:\(aStream)")
+                errorOccurredDelegate?(aStream)
                 break
         default:
+            print("接收到事件:\(eventCode) OpenCompleted事件:\(NSStreamEvent.OpenCompleted):\(aStream)")
             break;
         }
     }
-    
+
 }

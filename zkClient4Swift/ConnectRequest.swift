@@ -22,6 +22,6 @@ public class ConnectRequest:Serializable {
         buf.appendInt(timeOut)
         buf.appendLong(sessionId)
         buf.appendString(passwd)
-//        buf.appendBool(false)       //readOnly
+        buf.appendBool(false)       //readOnly
     }
 }
