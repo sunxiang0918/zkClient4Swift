@@ -24,6 +24,7 @@ public class ZkClient {
     private let _eventLoopQueue:dispatch_queue_t
     private let _connsema:dispatch_semaphore_t
     private let _sendsemaphore:dispatch_semaphore_t
+    private var _heartbeatThread:dispatch_source_t?
     
     //是否能处理的一个线程同步的信号量
     private var _readability = dispatch_semaphore_create(0)
@@ -435,28 +436,6 @@ public class ZkClient {
         
         dispatch_semaphore_signal(_sendsemaphore);
         
-//        func appendLength(data:NSData) ->NSData {
-//            //这里在发送消息前,需要把消息的最前端加上长度
-//            let _data = NSMutableData()
-//            _data.appendInt(data.length)
-//            _data.appendData(data)
-//            return _data
-//        }
-//        
-////        let message = outBuf.getBuffer()
-//        let message = appendLength(outBuf.getBuffer())
-//        
-//        let (success,errMsg) = _connection.send(data: message)
-//        
-//        if !success {
-//            //TODO 还没有处理失败的情况
-//            print("发送消息失败"+errMsg)
-//        }
-//        
-//        print("发送消息成功:\(message)")
-        
-//        //打开可以处理消息的信号量
-//        dispatch_semaphore_signal(_handleability)
     }
     
     
@@ -485,7 +464,6 @@ public class ZkClient {
                 return _data
             }
             
-            //        let message = outBuf.getBuffer()
             let message = appendLength(data)
             
             let (success,errMsg) = _connection.send(data: message)
@@ -531,6 +509,9 @@ public class ZkClient {
                 
                 self.connected = true
                 
+                //设置ping的 后台线程,否则zk会认为你超时了.也就是心跳
+                self.setupHeartbeatThread()
+                
                 dispatch_semaphore_signal(_connsema);
             }else{
                 //解析消息的头
@@ -548,6 +529,7 @@ public class ZkClient {
                     return
                 case -2:
                     //这里是Ping的结果
+                    print("接收到心跳的结果")
                     return
                 default:break
                 }
@@ -558,6 +540,31 @@ public class ZkClient {
                 
             }
             
+        }
+    }
+    
+    private func setupHeartbeatThread() {
+        
+        
+        _heartbeatThread = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+        
+        if let _heartbeat = _heartbeatThread {
+            dispatch_source_set_timer(_heartbeat, dispatch_time(DISPATCH_TIME_NOW, 0), 5 * NSEC_PER_SEC, 1 * NSEC_PER_SEC)
+            
+            dispatch_source_set_event_handler(_heartbeat, { () -> Void in
+                
+                print("进入setupHeartbeatThread 准备发送心跳")
+                
+                let outBuf = StreamOutBuffer()
+                
+                let ping = Ping()
+                ping.serialize(outBuf)
+                
+                self.sendMessage(outBuf)
+                
+            })
+            
+            dispatch_resume(_heartbeat)
         }
     }
     

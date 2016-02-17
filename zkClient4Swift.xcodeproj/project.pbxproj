@@ -41,6 +41,7 @@
 		A4C72A891C74065C00771E86 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A881C74065C00771E86 /* ViewController.swift */; };
 		A4C72A8B1C74065C00771E86 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4C72A8A1C74065C00771E86 /* Assets.xcassets */; };
 		A4C72A8E1C74065C00771E86 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4C72A8C1C74065C00771E86 /* Main.storyboard */; };
+		A4C72A941C741E6800771E86 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A931C741E6800771E86 /* Ping.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 		A4C72A8A1C74065C00771E86 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A4C72A8D1C74065C00771E86 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A4C72A8F1C74065C00771E86 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A4C72A931C741E6800771E86 /* Ping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +178,7 @@
 				A4C72A561C73035400771E86 /* GetDataRequest.swift */,
 				A4C72A581C73039300771E86 /* GetDataResponse.swift */,
 				A4C72A5A1C731B4A00771E86 /* SetDataRequest.swift */,
+				A4C72A931C741E6800771E86 /* Ping.swift */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				A4C72A5B1C731B4A00771E86 /* SetDataRequest.swift in Sources */,
 				A47C48D51C72175F00CB6110 /* ReplyHeader.swift in Sources */,
 				A4C72A4F1C72EAA100771E86 /* DeleteRequest.swift in Sources */,
+				A4C72A941C741E6800771E86 /* Ping.swift in Sources */,
 				A4C72A5D1C733AAC00771E86 /* SimpleSocket.swift in Sources */,
 				A4C72A451C72BF1200771E86 /* MessageReceiveQueue.swift in Sources */,
 				A4278FD01C70D31D00322A6E /* CreateMode.swift in Sources */,

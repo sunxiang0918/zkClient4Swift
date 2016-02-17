@@ -53,7 +53,6 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
             let loop = NSRunLoop.currentRunLoop()
             inputStream.scheduleInRunLoop(loop, forMode: NSDefaultRunLoopMode)
             outputStream.scheduleInRunLoop(loop, forMode: NSDefaultRunLoopMode)
-            
             inputStream.open()
             outputStream.open()
             loop.run()
