@@ -27,7 +27,7 @@ public class StreamOutBuffer {
         _data.appendBool(val)
     }
     
-    public func appendString(val:String){
+    public func appendString(val:String?){
         
         _data.appendString(val)
     }

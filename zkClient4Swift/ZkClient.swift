@@ -22,8 +22,12 @@ public class ZkClient {
     private var _sessionTimeout:Int
     
     private let _eventLoopQueue:dispatch_queue_t
+    private let _notifyLoopQueue:dispatch_queue_t
+    
     private let _connsema:dispatch_semaphore_t
     private let _sendsemaphore:dispatch_semaphore_t
+    private let _eventLock = NSLock()
+    
     private var _heartbeatThread:dispatch_source_t?
     
     //是否能处理的一个线程同步的信号量
@@ -35,7 +39,7 @@ public class ZkClient {
     
     private var _xid = 0
     
-    private var _childListener:[String:[(String,[String])throws->Void]] = Dictionary()
+    private var _childListener:[String:[(String,[String]?)throws->Void]] = Dictionary()
     private var _dataChangeListener:[String:[(String,AnyObject?)throws->Void]] = Dictionary()
     private var _dataDeleteListener:[String:[(String)throws->Void]] = Dictionary()
     
@@ -63,6 +67,7 @@ public class ZkClient {
         _connsema = dispatch_semaphore_create(0)
         _sendsemaphore = dispatch_semaphore_create(0)
         _eventLoopQueue = dispatch_queue_create("event.queue", DISPATCH_QUEUE_CONCURRENT);
+        _notifyLoopQueue = dispatch_queue_create("notify.queue", DISPATCH_QUEUE_CONCURRENT);
         
         dispatch_async(_eventLoopQueue) { () -> Void in
             self.asyncSendEvent()
@@ -557,7 +562,144 @@ public class ZkClient {
         let event = WatcherEvent()
         event.deserialize(StreamInBuffer(data: data))
         
+        //这里采用了异步的处理来响应事件
+        dispatch_async(_eventLoopQueue) { () -> Void in
+            self.processNotification(event)
+        }
+        
         print("解析出来的通知事件,type:\(event.type) state:\(event.state) path:\(event.path)")
+    }
+    
+    private func processNotification(event:WatcherEvent) {
+        
+        let stateChanged = event.path == nil
+        let znodeChanged = event.path != nil
+        let dataChanged = event.type == EventType.NodeDataChanged.rawValue || event.type == EventType.NodeDeleted.rawValue || event.type == EventType.NodeCreated.rawValue
+            || event.type == EventType.NodeChildrenChanged.rawValue
+        
+        _eventLock.lock()
+        defer {
+            _eventLock.unlock()
+        }
+        
+        do {
+            defer {
+                if stateChanged {
+                    //先空实现
+                }
+                
+                if znodeChanged {
+                    //先空实现
+                }
+                
+                if dataChanged {
+                    //先空实现
+                }
+            }
+            
+            if stateChanged {
+                //先空实现
+            }
+            
+            if dataChanged {
+                self.processDataOrChildChange(event)
+            }
+        }catch _{
+            
+        }
+        
+    }
+    
+    private func processDataOrChildChange(event:WatcherEvent) {
+        let path = event.path!
+        
+        func _fireChildChangedEvents(path:String){
+            let childListeners = _childListener[path]
+            if let tmp = childListeners where tmp.count > 0 {
+                fireChildChangedEvents(path,childListeners: tmp)
+            }
+        }
+        
+        func _fireDataChangedEvents(path:String) {
+            let dataChangeListeners = _dataChangeListener[path]
+            if let tmp = dataChangeListeners where tmp.count > 0 {
+                fireDataChangedEvents(path,dataChangeListeners: tmp)
+            }
+        }
+        
+        func _fireDataDeleteEvents(path:String) {
+            let dataDeleteListeners = _dataDeleteListener[path]
+            if let tmp = dataDeleteListeners where tmp.count > 0 {
+                fireDataDeleteEvents(path,dataDeleteListeners: tmp)
+            }
+        }
+        
+        switch event.typeEnum {
+            case .NodeChildrenChanged:
+                _fireChildChangedEvents(path)
+                break
+            case .NodeCreated:
+                _fireChildChangedEvents(path)
+                _fireDataChangedEvents(path)
+                break
+            case .NodeDeleted:
+                _fireChildChangedEvents(path)
+                _fireDataDeleteEvents(path)
+                break
+            case .NodeDataChanged:
+                _fireDataChangedEvents(path)
+                break
+            default:break
+        }
+    }
+    
+    private func fireDataDeleteEvents(path:String,dataDeleteListeners:[(String)throws->Void]) {
+        
+        for listener in dataDeleteListeners {
+            //TODO 这个地方应该是启动线程的
+            exists(path, watch: true)
+            
+            do{
+                try listener(path)
+            } catch let e {
+                print("处理节点删除消息监听失败path:\(path) error:\(e)")
+            }
+            
+        }
+    }
+    
+    private func fireDataChangedEvents(path:String,dataChangeListeners:[(String,AnyObject?)throws->Void]) {
+        
+        for listener in dataChangeListeners {
+            //TODO 这个地方应该是启动线程的
+            exists(path, watch: true)
+            
+            do{
+               let data = readData(path,watch: true)
+               try listener(path,data)
+            } catch let e {
+                print("处理节点内容变化消息监听失败path:\(path) error:\(e)")
+            }
+            
+        }
+    }
+    
+    private func fireChildChangedEvents(path:String,childListeners:[(String,[String]?)throws->Void]){
+        
+        for listener in childListeners {
+            
+            do{
+                // if the node doesn't exist we should listen for the root node to reappear
+                exists(path, watch: true)
+                
+                let children = getChildren(path,watch: true)
+                
+                try listener(path, children)
+            } catch let e {
+                print("处理节点子节点变化消息监听失败path:\(path) error:\(e)")
+            }
+            
+        }
     }
     
     private func setupHeartbeatThread() {

@@ -41,7 +41,12 @@ public extension NSMutableData {
     }
     
     // MARK: String
-    public func appendString(val:String,encoding:NSStringEncoding = NSUTF8StringEncoding){
+    public func appendString(val:String?,encoding:NSStringEncoding = NSUTF8StringEncoding){
+        
+        guard let val = val else {
+            self.appendInt(-1)
+            return
+        }
         
         //获取到字节的长度,使用某一种编码
         let pLength : Int = val.lengthOfBytesUsingEncoding(encoding)
@@ -121,10 +126,14 @@ public extension NSData {
     }
     
     // MARK: String
-    public func getString(location:Int = 0,encoding:NSStringEncoding = NSUTF8StringEncoding) throws -> (String,Int){
+    public func getString(location:Int = 0,encoding:NSStringEncoding = NSUTF8StringEncoding) throws -> (String?,Int){
         
         //先获取到长度
         let len = self.getInt(NSRange(location:location,length:sizeof(UInt32)))
+        
+        if len == -1 {
+            return (nil,0)
+        }
         
         //找到子字节数组
         let subData = self.subdataWithRange(NSRange(location: location+sizeof(UInt32), length: len))
