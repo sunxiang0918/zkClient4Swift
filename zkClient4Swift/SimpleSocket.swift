@@ -98,6 +98,7 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
     public func read(expectlen:Int, timeout:Int = -1)->[UInt8]?{
      
         guard let inputStream = inputStream else {
+            print("错误,没有打开inputStream")
             return nil
         }
         
@@ -109,6 +110,8 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
             let result = buff[0..<len]
             return Array(result)
         }
+        
+        print("读取出来的len为0,错误:\(inputStream.streamError)")
         
         return nil
     }

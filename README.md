@@ -2,7 +2,7 @@
 
 zkClient4Swift is a simple zookeeper client written in swift2 . Therefore,**it requires xCode 7 to compile**.
 
-
+Swift已经开源了,以后Swift不仅仅可以用来写IOS程序,还可以来做其他的后端程序等等.因此,有可能会需要涉及到zookeeper的连接,网上搜索了一遍,目前还没有Swift的Zookeeper的客户端.因此,就自己实现了一个,目前可能还不完善,有需要的兄弟自取吧.
 
 # api usage
 ## create client
