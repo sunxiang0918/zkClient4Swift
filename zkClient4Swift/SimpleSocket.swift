@@ -49,11 +49,15 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
         inputStream.delegate = self
         outputStream.delegate = self
         
-        inputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        outputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        
-        inputStream.open()
-        outputStream.open()
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) { () -> Void in
+            let loop = NSRunLoop.currentRunLoop()
+            inputStream.scheduleInRunLoop(loop, forMode: NSDefaultRunLoopMode)
+            outputStream.scheduleInRunLoop(loop, forMode: NSDefaultRunLoopMode)
+            
+            inputStream.open()
+            outputStream.open()
+            loop.run()
+        }
 
         return (true,"")
     }

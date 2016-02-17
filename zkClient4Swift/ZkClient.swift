@@ -23,10 +23,13 @@ public class ZkClient {
     
     private let _eventLoopQueue:dispatch_queue_t
     private let _connsema:dispatch_semaphore_t
+    private let _sendsemaphore:dispatch_semaphore_t
     
     //是否能处理的一个线程同步的信号量
-    private var _handleability = dispatch_semaphore_create(0)
+    private var _readability = dispatch_semaphore_create(0)
+    private var _writeability = dispatch_semaphore_create(0)
     
+    private var _sendCache:[NSData] = []
     private let _receiveMessageQueue = MessageReceiveQueue()
     
     private var _xid = 0
@@ -53,7 +56,12 @@ public class ZkClient {
         
         //创建消息接收监听的信号量
         _connsema = dispatch_semaphore_create(0)
+        _sendsemaphore = dispatch_semaphore_create(0)
         _eventLoopQueue = dispatch_queue_create("event.queue", DISPATCH_QUEUE_CONCURRENT);
+        
+        dispatch_async(_eventLoopQueue) { () -> Void in
+            self.asyncSendEvent()
+        }
         
         dispatch_async(_eventLoopQueue) { () -> Void in
             self.asyncRecvEvent()
@@ -76,6 +84,9 @@ public class ZkClient {
         if  !success {
             print("打开连接失败"+errMsg)
         }
+        
+        _connection.hasSpaceAvailableDelegate = {_ in dispatch_semaphore_signal(self._writeability)}
+        _connection.hasBytesAvailableDelegate = {_ in dispatch_semaphore_signal(self._readability)}
         
         //发送ZK连接的命令
         self.sendConnectionRequest()
@@ -418,25 +429,75 @@ public class ZkClient {
             return
         }
         
-        func appendLength(data:NSData) ->NSData {
-            //这里在发送消息前,需要把消息的最前端加上长度
-            let _data = NSMutableData()
-            _data.appendInt(data.length)
-            _data.appendData(data)
-            return _data
+        synchronized(_sendCache, block: { () -> Void in
+            self._sendCache.append(outBuf.getBuffer())
+        })
+        
+        dispatch_semaphore_signal(_sendsemaphore);
+        
+//        func appendLength(data:NSData) ->NSData {
+//            //这里在发送消息前,需要把消息的最前端加上长度
+//            let _data = NSMutableData()
+//            _data.appendInt(data.length)
+//            _data.appendData(data)
+//            return _data
+//        }
+//        
+////        let message = outBuf.getBuffer()
+//        let message = appendLength(outBuf.getBuffer())
+//        
+//        let (success,errMsg) = _connection.send(data: message)
+//        
+//        if !success {
+//            //TODO 还没有处理失败的情况
+//            print("发送消息失败"+errMsg)
+//        }
+//        
+//        print("发送消息成功:\(message)")
+        
+//        //打开可以处理消息的信号量
+//        dispatch_semaphore_signal(_handleability)
+    }
+    
+    
+    private func asyncSendEvent() {
+        
+        while true {
+            if _closed {
+                break
+            }
+            
+            dispatch_semaphore_wait(_sendsemaphore, DISPATCH_TIME_FOREVER);
+            
+            //用于阻止线程在还没有打开连接的时候就开始不断的循环了
+            dispatch_semaphore_wait(_writeability, DISPATCH_TIME_FOREVER)
+            
+            var data:NSData! = nil
+            synchronized(_sendCache, block: { () -> Void in
+                data = self._sendCache.removeFirst()
+            })
+            
+            func appendLength(data:NSData) ->NSData {
+                //这里在发送消息前,需要把消息的最前端加上长度
+                let _data = NSMutableData()
+                _data.appendInt(data.length)
+                _data.appendData(data)
+                return _data
+            }
+            
+            //        let message = outBuf.getBuffer()
+            let message = appendLength(data)
+            
+            let (success,errMsg) = _connection.send(data: message)
+            
+            if !success {
+                //TODO 还没有处理失败的情况
+                print("发送消息失败"+errMsg)
+            }
+            
+            print("发送消息成功:\(message)")
         }
         
-        let message = appendLength(outBuf.getBuffer())
-        
-        let (success,errMsg) = _connection.send(data: message)
-        
-        if !success {
-            //TODO 还没有处理失败的情况
-            print("发送消息失败"+errMsg)
-        }
-        
-        //打开可以处理消息的信号量
-        dispatch_semaphore_signal(_handleability)
     }
     
     private func asyncRecvEvent(){
@@ -447,7 +508,7 @@ public class ZkClient {
             }
             
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
-            dispatch_semaphore_wait(_handleability, DISPATCH_TIME_FOREVER)
+            dispatch_semaphore_wait(_readability, DISPATCH_TIME_FOREVER)
             
             //到这的肯定是可以读取内容了
             guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {

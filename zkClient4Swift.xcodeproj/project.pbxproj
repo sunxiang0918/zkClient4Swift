@@ -37,6 +37,10 @@
 		A4C72A591C73039300771E86 /* GetDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A581C73039300771E86 /* GetDataResponse.swift */; };
 		A4C72A5B1C731B4A00771E86 /* SetDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A5A1C731B4A00771E86 /* SetDataRequest.swift */; };
 		A4C72A5D1C733AAC00771E86 /* SimpleSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A5C1C733AAC00771E86 /* SimpleSocket.swift */; };
+		A4C72A871C74065C00771E86 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A861C74065C00771E86 /* AppDelegate.swift */; };
+		A4C72A891C74065C00771E86 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A881C74065C00771E86 /* ViewController.swift */; };
+		A4C72A8B1C74065C00771E86 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4C72A8A1C74065C00771E86 /* Assets.xcassets */; };
+		A4C72A8E1C74065C00771E86 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4C72A8C1C74065C00771E86 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -74,10 +78,23 @@
 		A4C72A581C73039300771E86 /* GetDataResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetDataResponse.swift; sourceTree = "<group>"; };
 		A4C72A5A1C731B4A00771E86 /* SetDataRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetDataRequest.swift; sourceTree = "<group>"; };
 		A4C72A5C1C733AAC00771E86 /* SimpleSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleSocket.swift; sourceTree = "<group>"; };
+		A4C72A841C74065C00771E86 /* zkClient4Swift-Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "zkClient4Swift-Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4C72A861C74065C00771E86 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A4C72A881C74065C00771E86 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A4C72A8A1C74065C00771E86 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A4C72A8D1C74065C00771E86 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A4C72A8F1C74065C00771E86 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A4278FAF1C70A53B00322A6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4C72A811C74065C00771E86 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -94,6 +111,7 @@
 				A4278FBE1C70A5F200322A6E /* zkClient4Swift-OSX */,
 				A4278FB51C70A53B00322A6E /* zkClient4Swift */,
 				A47C48C51C72088300CB6110 /* Third parties */,
+				A4C72A851C74065C00771E86 /* zkClient4Swift-Demo */,
 				A4278FB41C70A53B00322A6E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				A4278FB31C70A53B00322A6E /* zkClient4Swift.framework */,
+				A4C72A841C74065C00771E86 /* zkClient4Swift-Demo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -192,6 +211,18 @@
 			path = zkClient4Swift;
 			sourceTree = "<group>";
 		};
+		A4C72A851C74065C00771E86 /* zkClient4Swift-Demo */ = {
+			isa = PBXGroup;
+			children = (
+				A4C72A861C74065C00771E86 /* AppDelegate.swift */,
+				A4C72A881C74065C00771E86 /* ViewController.swift */,
+				A4C72A8A1C74065C00771E86 /* Assets.xcassets */,
+				A4C72A8C1C74065C00771E86 /* Main.storyboard */,
+				A4C72A8F1C74065C00771E86 /* Info.plist */,
+			);
+			path = "zkClient4Swift-Demo";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -224,16 +255,37 @@
 			productReference = A4278FB31C70A53B00322A6E /* zkClient4Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		A4C72A831C74065C00771E86 /* zkClient4Swift-Demo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4C72A901C74065C00771E86 /* Build configuration list for PBXNativeTarget "zkClient4Swift-Demo" */;
+			buildPhases = (
+				A4C72A801C74065C00771E86 /* Sources */,
+				A4C72A811C74065C00771E86 /* Frameworks */,
+				A4C72A821C74065C00771E86 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "zkClient4Swift-Demo";
+			productName = "zkClient4Swift-Demo";
+			productReference = A4C72A841C74065C00771E86 /* zkClient4Swift-Demo.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		A4278FAA1C70A53B00322A6E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = SUN;
 				TargetAttributes = {
 					A4278FB21C70A53B00322A6E = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+					A4C72A831C74065C00771E86 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
 				};
@@ -244,6 +296,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = A4278FA91C70A53B00322A6E;
 			productRefGroup = A4278FB41C70A53B00322A6E /* Products */;
@@ -251,6 +304,7 @@
 			projectRoot = "";
 			targets = (
 				A4278FB21C70A53B00322A6E /* zkClient4Swift */,
+				A4C72A831C74065C00771E86 /* zkClient4Swift-Demo */,
 			);
 		};
 /* End PBXProject section */
@@ -260,6 +314,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4C72A821C74065C00771E86 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4C72A8B1C74065C00771E86 /* Assets.xcassets in Resources */,
+				A4C72A8E1C74065C00771E86 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,7 +365,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A4C72A801C74065C00771E86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4C72A891C74065C00771E86 /* ViewController.swift in Sources */,
+				A4C72A871C74065C00771E86 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A4C72A8C1C74065C00771E86 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A4C72A8D1C74065C00771E86 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A4278FB91C70A53B00322A6E /* Debug */ = {
@@ -434,6 +517,30 @@
 			};
 			name = Release;
 		};
+		A4C72A911C74065C00771E86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "zkClient4Swift-Demo/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "cn.sunxiang0918.zkClient4Swift-Demo";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A4C72A921C74065C00771E86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "zkClient4Swift-Demo/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "cn.sunxiang0918.zkClient4Swift-Demo";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -454,6 +561,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		A4C72A901C74065C00771E86 /* Build configuration list for PBXNativeTarget "zkClient4Swift-Demo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4C72A911C74065C00771E86 /* Debug */,
+				A4C72A921C74065C00771E86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
