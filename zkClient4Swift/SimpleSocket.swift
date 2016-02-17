@@ -118,19 +118,19 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
     public func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
         switch (eventCode) {
             case NSStreamEvent.HasSpaceAvailable:
-                print("接收到HasSpaceAvailable事件:\(aStream)")
+//                print("接收到HasSpaceAvailable事件:\(aStream)")
                 hasSpaceAvailableDelegate?(aStream)
                 break
             case NSStreamEvent.HasBytesAvailable:
-                print("接收到HasBytesAvailable事件:\(aStream)")
+//                print("接收到HasBytesAvailable事件:\(aStream)")
                 hasBytesAvailableDelegate?(aStream)
                 break
             case NSStreamEvent.EndEncountered:
-                print("接收到EndEncountered事件:\(aStream)")
+//                print("接收到EndEncountered事件:\(aStream)")
                 endEncounteredDelegate?(aStream)
                 break
             case NSStreamEvent.ErrorOccurred:
-                print("接收到ErrorOccurred事件:\(aStream)")
+//                print("接收到ErrorOccurred事件:\(aStream)")
                 errorOccurredDelegate?(aStream)
                 break
         default:

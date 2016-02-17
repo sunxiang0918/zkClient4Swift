@@ -473,7 +473,7 @@ public class ZkClient {
                 print("发送消息失败"+errMsg)
             }
             
-            print("发送消息成功:\(message)")
+//            print("发送消息成功:\(message)")
         }
         
     }
@@ -490,6 +490,7 @@ public class ZkClient {
             
             //到这的肯定是可以读取内容了
             guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
+                print("读取错误")
                 continue
             }
             
@@ -526,11 +527,11 @@ public class ZkClient {
                 switch header.xid {
                 case -1:
                     //这里是消息的通知
-                    return
+                    continue
                 case -2:
                     //这里是Ping的结果
                     print("接收到心跳的结果")
-                    return
+                    continue
                 default:break
                 }
                 
@@ -553,6 +554,7 @@ public class ZkClient {
             
             dispatch_source_set_event_handler(_heartbeat, { () -> Void in
                 
+//                print("")
                 print("进入setupHeartbeatThread 准备发送心跳")
                 
                 let outBuf = StreamOutBuffer()
