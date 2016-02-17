@@ -35,6 +35,10 @@ public class ZkClient {
     
     private var _xid = 0
     
+    private var _childListener:[String:[(String,[String])throws->Void]] = Dictionary()
+    private var _dataChangeListener:[String:[(String,AnyObject?)throws->Void]] = Dictionary()
+    private var _dataDeleteListener:[String:[(String)throws->Void]] = Dictionary()
+    
     public init(serverstring:String,connectionTimeout:Int = 2147483647,sessionTimeout:Int = 30000) {
         
         _connectionTimeout = connectionTimeout
@@ -150,7 +154,7 @@ public class ZkClient {
      - parameter dataChange:  数据变化的事件处理
      - parameter dataDeleted: 数据节点删除的事件处理
      */
-    public func subscribeDataChanges(path:String,dataChange:(String,Any)throws->Void,dataDeleted:((String)throws->Void)?=nil){
+    public func subscribeDataChanges(path:String,dataChange:(String,AnyObject?)throws->Void,dataDeleted:((String)throws->Void)?=nil){
         
     }
     
@@ -161,7 +165,7 @@ public class ZkClient {
      - parameter dataChange:  数据变化的事件处理
      - parameter dataDeleted: 数据节点删除的事件处理
      */
-    public func unsubscribeDataChanges(path:String,dataChange:(String,Any)throws->Void,dataDeleted:((String)throws->Void)?=nil){
+    public func unsubscribeDataChanges(path:String,dataChange:(String,AnyObject?)throws->Void,dataDeleted:((String)throws->Void)?=nil){
         
     }
     
@@ -267,10 +271,11 @@ public class ZkClient {
      
      - returns: 返回的对象
      */
-    public func readData(path:String,deserialize:(StreamInBuffer)->AnyObject? = {inBuffer in inBuffer.readString()}) -> AnyObject? {
+    public func readData(path:String,watch:Bool? = nil,deserialize:(StreamInBuffer)->AnyObject? = {inBuffer in inBuffer.readString()}) -> AnyObject? {
         
         let getDataRequest = GetDataRequest()
         getDataRequest.path = path
+        getDataRequest.watch = watch ?? hasListeners(path)
         
         //执行命令,并得到结果
         guard let resposne = execute(message: getDataRequest, asType: .getData) else {
@@ -322,10 +327,11 @@ public class ZkClient {
      
      - returns: 存在返回true,不存在返回false
      */
-    public func exists(path:String) -> Bool {
+    public func exists(path:String,watch:Bool? = nil) -> Bool {
         
         let existsRequest = ExistsRequest()
         existsRequest.path = path
+        existsRequest.watch = watch ?? hasListeners(path)
         
         //执行命令,并得到结果
         guard let resposne = execute(message: existsRequest, asType: .exists) else {
@@ -346,10 +352,11 @@ public class ZkClient {
      
      - returns: 子节点,如果当前节点不存在,那么返回nil
      */
-    public func getChildren(path:String) -> [String]? {
+    public func getChildren(path:String,watch:Bool? = nil) -> [String]? {
         
         let getChildrenRequest = GetChildrenRequest()
         getChildrenRequest.path = path
+        getChildrenRequest.watch = watch ?? hasListeners(path)
         
         //执行命令,并得到结果
         guard let resposne = execute(message: getChildrenRequest, asType: .getChildren2) else {
@@ -527,6 +534,8 @@ public class ZkClient {
                 switch header.xid {
                 case -1:
                     //这里是消息的通知
+                    print("接收到事件的通知")
+                    self.handleNotification(realData)
                     continue
                 case -2:
                     //这里是Ping的结果
@@ -542,6 +551,13 @@ public class ZkClient {
             }
             
         }
+    }
+    
+    private func handleNotification(data:NSData) {
+        let event = WatcherEvent()
+        event.deserialize(StreamInBuffer(data: data))
+        
+        print("解析出来的通知事件,type:\(event.type) state:\(event.state) path:\(event.path)")
     }
     
     private func setupHeartbeatThread() {
@@ -579,5 +595,22 @@ public class ZkClient {
         }
         
         return xid
+    }
+    
+    private func hasListeners(path:String) -> Bool {
+        
+        if let tmp = self._childListener[path] where tmp.count > 0 {
+            return true
+        }
+        
+        if let tmp = self._dataChangeListener[path] where tmp.count > 0 {
+            return true
+        }
+        
+        if let tmp = self._dataDeleteListener[path] where tmp.count > 0 {
+            return true
+        }
+        
+        return false
     }
 }

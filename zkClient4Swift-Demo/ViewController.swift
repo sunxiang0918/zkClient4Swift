@@ -27,7 +27,7 @@ class ViewController: NSViewController {
 //            print("子节点:\(child)")
 //        }
 
-        print("接收到的数据:\(zkClient.readData("/Hello/Byte"))")
+        print("接收到的数据:\(zkClient.readData("/Hello/Byte",watch: true))")
         
 //        socket.connect(timeout: -1)
 //        socket.hasBytesAvailableDelegate = {aStream in

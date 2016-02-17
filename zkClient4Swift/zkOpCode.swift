@@ -103,6 +103,46 @@ public enum KeeperExceptionCode:Int {
     case AuthFailed = -115
 }
 
+/**
+ 监听事件的枚举
+ 
+ - None:                <#None description#>
+ - NodeCreated:         <#NodeCreated description#>
+ - NodeDeleted:         <#NodeDeleted description#>
+ - NodeDataChanged:     <#NodeDataChanged description#>
+ - NodeChildrenChanged: <#NodeChildrenChanged description#>
+ */
+public enum EventType:Int {
+    case None = -1
+    case NodeCreated = 1
+    case NodeDeleted = 2
+    case NodeDataChanged = 3
+    case NodeChildrenChanged = 4
+}
+
+/**
+ 事件的状态
+ 
+ - Unknown:           <#Unknown description#>
+ - Disconnected:      <#Disconnected description#>
+ - NoSyncConnected:   <#NoSyncConnected description#>
+ - SyncConnected:     <#SyncConnected description#>
+ - AuthFailed:        <#AuthFailed description#>
+ - ConnectedReadOnly: <#ConnectedReadOnly description#>
+ - SaslAuthenticated: <#SaslAuthenticated description#>
+ - Expired:           <#Expired description#>
+ */
+public enum KeeperState:Int {
+    case Unknown = -1
+    case Disconnected = 0
+    case NoSyncConnected = 1
+    case SyncConnected = 3
+    case AuthFailed = 4
+    case ConnectedReadOnly = 5
+    case SaslAuthenticated = 6
+    case Expired = -112
+}
+
 public enum Perms:Int {
     case READ = 1
     case WRITE = 2
