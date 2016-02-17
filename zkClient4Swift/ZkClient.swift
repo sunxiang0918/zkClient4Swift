@@ -39,9 +39,12 @@ public class ZkClient {
     
     private var _xid = 0
     
-    private var _childListener:[String:[(String,[String]?)throws->Void]] = Dictionary()
-    private var _dataChangeListener:[String:[(String,AnyObject?)throws->Void]] = Dictionary()
-    private var _dataDeleteListener:[String:[(String)throws->Void]] = Dictionary()
+    private var _childListener:[String:[String:(String,[String]?)throws->Void ]] = Dictionary()
+    private let _childListenerLock = NSLock()
+    private var _dataChangeListener:[String:[String:(String,AnyObject?)throws->Void]] = Dictionary()
+    private let _dataChangeListenerLock = NSLock()
+    private var _dataDeleteListener:[String:[String:(String)throws->Void]] = Dictionary()
+    private let _dataDeleteListenerLock = NSLock()
     
     public init(serverstring:String,connectionTimeout:Int = 2147483647,sessionTimeout:Int = 30000) {
         
@@ -137,7 +140,19 @@ public class ZkClient {
      
      - returns: the current children of the path or null if the zk node with the given path doesn't exist.
      */
-    public func subscribeChildChanges(path:String,listener:(String,[String])throws->Void) -> [String]{
+    public func subscribeChildChanges(path:String,listenerName:String,listener:(String,[String]?)throws->Void) -> [String]?{
+        
+        _childListenerLock.lock()
+        
+        var listeners = _childListener[path]
+        
+        if listeners == nil {
+           _childListener[path] = [:]
+        }
+        
+        _childListener[path]?[listenerName] = listener
+        
+        _childListenerLock.unlock()
         
         return watchForChilds(path)
     }
@@ -148,8 +163,14 @@ public class ZkClient {
      - parameter path:     给定的路径
      - parameter listener: 事件处理器
      */
-    public func unsubscribeChildChanges(path:String,listener:(String,[String])throws->Void) {
+    public func unsubscribeChildChanges(path:String,listenerName:String ) {
+        _childListenerLock.lock()
         
+        var listeners = _childListener[path]
+        
+        listeners?.removeValueForKey(listenerName)
+        
+        _childListenerLock.unlock()
     }
     
     /**
@@ -159,7 +180,20 @@ public class ZkClient {
      - parameter dataChange:  数据变化的事件处理
      - parameter dataDeleted: 数据节点删除的事件处理
      */
-    public func subscribeDataChanges(path:String,dataChange:(String,AnyObject?)throws->Void,dataDeleted:((String)throws->Void)?=nil){
+    public func subscribeDataChanges(path:String,listenerName:String,dataChange:(String,AnyObject?)throws->Void){
+     
+        _dataChangeListenerLock.lock()
+        
+        var listeners = _dataChangeListener[path]
+        
+        if listeners == nil {
+            _dataChangeListener[path] = [:]
+        }
+        
+        _dataChangeListener[path]?[listenerName] = listener
+        
+        _dataChangeListenerLock.unlock()
+        
         
     }
     
@@ -170,8 +204,38 @@ public class ZkClient {
      - parameter dataChange:  数据变化的事件处理
      - parameter dataDeleted: 数据节点删除的事件处理
      */
-    public func unsubscribeDataChanges(path:String,dataChange:(String,AnyObject?)throws->Void,dataDeleted:((String)throws->Void)?=nil){
+    public func unsubscribeDataChanges(path:String,listenerName:String){
+        _dataChangeListenerLock.lock()
         
+        var listeners = _dataChangeListener[path]
+        
+        listeners?.removeValueForKey(listenerName)
+        
+        _dataChangeListenerLock.unlock()
+    }
+    
+    public func subscribeDataDelete(path:String,listenerName:String,dataDeleted:(String)throws->Void) {
+        _dataDeleteListenerLock.lock()
+        
+        var listeners = _dataDeleteListener[path]
+        
+        if listeners == nil {
+            _dataDeleteListener[path] = [:]
+        }
+        
+        _dataDeleteListener[path]?[listenerName] = listener
+        
+        _dataDeleteListenerLock.unlock()
+    }
+    
+    public func unsubscribeDataDelete(path:String,listenerName:String){
+        _dataDeleteListenerLock.lock()
+        
+        var listeners = _dataDeleteListener[path]
+        
+        listeners?.removeValueForKey(listenerName)
+        
+        _dataDeleteListenerLock.unlock()
     }
     
     /**
@@ -188,9 +252,11 @@ public class ZkClient {
      
      - returns: the current children of the path or null if the zk node with the given path doesn't exist.
      */
-    public func watchForChilds(path:String) -> [String] {
+    public func watchForChilds(path:String) -> [String]? {
         
-        return [String]()
+        exists(path, watch: true)
+        
+        return getChildren(path, watch: true);
     }
     
     /**
@@ -199,7 +265,7 @@ public class ZkClient {
      - parameter path:
      */
     public func watchForData(path:String) {
-        
+        exists(path, watch: true)
     }
     
     // MARK: 节点数据相关
@@ -215,7 +281,7 @@ public class ZkClient {
     
     - returns: 节点的完整路径
     */
-    public func create(path:String,data:AnyObject? = nil,model:CreateMode,createParents:Bool = false,serialize:(AnyObject?,StreamOutBuffer)->Void = {(obj:AnyObject?,outBuffer:StreamOutBuffer) in outBuffer.appendString((obj ?? "") as! String) })throws -> String{
+    public func create(path:String,data:AnyObject? = nil,model:CreateMode,createParents:Bool = false,serialize:(AnyObject?,StreamOutBuffer)->Void = {(obj:AnyObject?,outBuffer:StreamOutBuffer) in outBuffer.appendString((obj ?? "") as? String) })throws -> String{
         
         let createRequest = CreateRequest()
         createRequest.path = path
@@ -307,7 +373,7 @@ public class ZkClient {
      
      - throws:
      */
-    public func writeData(path:String,data:AnyObject? = nil,serialize:(AnyObject?,StreamOutBuffer)->Void = {(obj:AnyObject?,outBuffer:StreamOutBuffer) in outBuffer.appendString((obj ?? "") as! String) })throws -> Bool {
+    public func writeData(path:String,data:AnyObject? = nil,serialize:(AnyObject?,StreamOutBuffer)->Void = {(obj:AnyObject?,outBuffer:StreamOutBuffer) in outBuffer.appendString((obj ?? "") as? String) })throws -> Bool {
         
         let setDataRequest = SetDataRequest()
         
@@ -539,7 +605,6 @@ public class ZkClient {
                 switch header.xid {
                 case -1:
                     //这里是消息的通知
-                    print("接收到事件的通知")
                     self.handleNotification(realData)
                     continue
                 case -2:
@@ -563,11 +628,10 @@ public class ZkClient {
         event.deserialize(StreamInBuffer(data: data))
         
         //这里采用了异步的处理来响应事件
-        dispatch_async(_eventLoopQueue) { () -> Void in
+        dispatch_async(_notifyLoopQueue) { () -> Void in
             self.processNotification(event)
         }
         
-        print("解析出来的通知事件,type:\(event.type) state:\(event.state) path:\(event.path)")
     }
     
     private func processNotification(event:WatcherEvent) {
@@ -649,28 +713,29 @@ public class ZkClient {
             case .NodeDataChanged:
                 _fireDataChangedEvents(path)
                 break
-            default:break
+            default:
+            break
         }
     }
     
-    private func fireDataDeleteEvents(path:String,dataDeleteListeners:[(String)throws->Void]) {
+    private func fireDataDeleteEvents(path:String,dataDeleteListeners:[String:(String)throws->Void]) {
         
-        for listener in dataDeleteListeners {
+        for (name,listener) in dataDeleteListeners {
             //TODO 这个地方应该是启动线程的
             exists(path, watch: true)
             
             do{
                 try listener(path)
             } catch let e {
-                print("处理节点删除消息监听失败path:\(path) error:\(e)")
+                print("处理节点删除消息监听:\(name) 失败path:\(path) error:\(e)")
             }
             
         }
     }
     
-    private func fireDataChangedEvents(path:String,dataChangeListeners:[(String,AnyObject?)throws->Void]) {
+    private func fireDataChangedEvents(path:String,dataChangeListeners:[String:(String,AnyObject?)throws->Void]) {
         
-        for listener in dataChangeListeners {
+        for (name,listener) in dataChangeListeners {
             //TODO 这个地方应该是启动线程的
             exists(path, watch: true)
             
@@ -678,15 +743,17 @@ public class ZkClient {
                let data = readData(path,watch: true)
                try listener(path,data)
             } catch let e {
-                print("处理节点内容变化消息监听失败path:\(path) error:\(e)")
+                print("处理节点内容变化消息监听:\(name) 失败path:\(path) error:\(e)")
             }
             
         }
     }
     
-    private func fireChildChangedEvents(path:String,childListeners:[(String,[String]?)throws->Void]){
+    private func fireChildChangedEvents(path:String,childListeners:[String:(String,[String]?)throws->Void]){
         
-        for listener in childListeners {
+        print("开始处理子节点的变化:\(path)")
+        
+        for (name,listener) in childListeners {
             
             do{
                 // if the node doesn't exist we should listen for the root node to reappear
@@ -696,7 +763,7 @@ public class ZkClient {
                 
                 try listener(path, children)
             } catch let e {
-                print("处理节点子节点变化消息监听失败path:\(path) error:\(e)")
+                print("处理节点子节点变化消息监听:\(name) 失败path:\(path) error:\(e)")
             }
             
         }

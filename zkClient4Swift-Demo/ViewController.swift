@@ -27,7 +27,16 @@ class ViewController: NSViewController {
 //            print("子节点:\(child)")
 //        }
 
-        print("接收到的数据:\(zkClient.readData("/Hello/Byte",watch: true))")
+//        print("接收到的数据:\(zkClient.readData("/Hello/Byte",watch: true))")
+        
+        zkClient.subscribeChildChanges("/Hello", listenerName: "HelloChildChanges") { (path, children) -> Void in
+            print("路径:\(path)子节点发生变化:")
+            if let cc  = children {
+                for c in cc {
+                    print("\(c)")
+                }
+            }
+        }
         
 //        socket.connect(timeout: -1)
 //        socket.hasBytesAvailableDelegate = {aStream in
