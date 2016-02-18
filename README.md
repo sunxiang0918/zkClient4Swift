@@ -10,6 +10,7 @@ Swift已经开源了,并且支持Linux上运行.以后Swift不仅仅可以用来
 * 节点的基本操作				OK
 * 节点变化的监听				OK
 * 断线重连,网络闪断重试			TODO
+* 基于framework做一个Mac版的ZK的本地客户端.现在大家都是用的ZooInspector.jar   TODO
 
 # api usage
 ## create client
