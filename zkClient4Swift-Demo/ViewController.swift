@@ -38,10 +38,13 @@ class ViewController: NSViewController {
             }
         }
         
-//        socket.connect(timeout: -1)
-//        socket.hasBytesAvailableDelegate = {aStream in
-//            print("读出的结果:\(self.socket.read(10240, timeout: -1))")
-//        }
+        zkClient.subscribeDataChanges("/Hello/Byte", listenerName: "ByteNodeDataChanges") { (path, data) -> Void in
+            print("路径:\(path)节点内容发生变化,新的内容为:\(data)")
+        }
+        
+        zkClient.subscribeDataDelete("/Hello/Byte", listenerName: "ByteNodeDelete") { (path) -> Void in
+            print("路径节点:\(path)被删除")
+        }
 
     }
     

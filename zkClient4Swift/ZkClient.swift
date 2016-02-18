@@ -144,7 +144,7 @@ public class ZkClient {
         
         _childListenerLock.lock()
         
-        var listeners = _childListener[path]
+        let listeners = _childListener[path]
         
         if listeners == nil {
            _childListener[path] = [:]
@@ -180,11 +180,11 @@ public class ZkClient {
      - parameter dataChange:  数据变化的事件处理
      - parameter dataDeleted: 数据节点删除的事件处理
      */
-    public func subscribeDataChanges(path:String,listenerName:String,dataChange:(String,AnyObject?)throws->Void){
+    public func subscribeDataChanges(path:String,listenerName:String,listener:(String,AnyObject?)throws->Void){
      
         _dataChangeListenerLock.lock()
         
-        var listeners = _dataChangeListener[path]
+        let listeners = _dataChangeListener[path]
         
         if listeners == nil {
             _dataChangeListener[path] = [:]
@@ -194,7 +194,7 @@ public class ZkClient {
         
         _dataChangeListenerLock.unlock()
         
-        
+        watchForData(path)
     }
     
     /**
@@ -214,10 +214,10 @@ public class ZkClient {
         _dataChangeListenerLock.unlock()
     }
     
-    public func subscribeDataDelete(path:String,listenerName:String,dataDeleted:(String)throws->Void) {
+    public func subscribeDataDelete(path:String,listenerName:String,listener:(String)throws->Void) {
         _dataDeleteListenerLock.lock()
         
-        var listeners = _dataDeleteListener[path]
+        let listeners = _dataDeleteListener[path]
         
         if listeners == nil {
             _dataDeleteListener[path] = [:]
@@ -226,6 +226,8 @@ public class ZkClient {
         _dataDeleteListener[path]?[listenerName] = listener
         
         _dataDeleteListenerLock.unlock()
+        
+        watchForData(path)
     }
     
     public func unsubscribeDataDelete(path:String,listenerName:String){
