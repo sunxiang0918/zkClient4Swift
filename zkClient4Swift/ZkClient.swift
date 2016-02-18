@@ -679,6 +679,8 @@ public class ZkClient {
     private func processDataOrChildChange(event:WatcherEvent) {
         let path = event.path!
         
+        print("接收到事件:\(event.path) \(event.typeEnum)")
+        
         func _fireChildChangedEvents(path:String){
             let childListeners = _childListener[path]
             if let tmp = childListeners where tmp.count > 0 {
@@ -705,11 +707,17 @@ public class ZkClient {
                 _fireChildChangedEvents(path)
                 break
             case .NodeCreated:
-                _fireChildChangedEvents(path)
+                //这个地方的逻辑应该是这样的,zk对于同一个节点的不同类型的监听,只会触发一次通知.
+                //由于节点被删除了.那么就需要判断它的父节点是否注册了ChildChangedEvents,如果注册了的,那么同样需要通知出来
+                let parentPath = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
+                _fireChildChangedEvents(parentPath)
                 _fireDataChangedEvents(path)
                 break
             case .NodeDeleted:
-                _fireChildChangedEvents(path)
+                //这个地方的逻辑应该是这样的,zk对于同一个节点的不同类型的监听,只会触发一次通知.
+                //由于节点被删除了.那么就需要判断它的父节点是否注册了ChildChangedEvents,如果注册了的,那么同样需要通知出来
+                let parentPath = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
+                _fireChildChangedEvents(parentPath)
                 _fireDataDeleteEvents(path)
                 break
             case .NodeDataChanged:
@@ -723,9 +731,8 @@ public class ZkClient {
     private func fireDataDeleteEvents(path:String,dataDeleteListeners:[String:(String)throws->Void]) {
         
         for (name,listener) in dataDeleteListeners {
-            //TODO 这个地方应该是启动线程的
-            exists(path, watch: true)
             
+            exists(path, watch: true)
             do{
                 try listener(path)
             } catch let e {
