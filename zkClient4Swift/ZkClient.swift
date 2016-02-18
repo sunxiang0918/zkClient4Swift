@@ -45,6 +45,8 @@ public class ZkClient {
     private let _dataChangeListenerLock = NSLock()
     private var _dataDeleteListener:[String:[String:(String)throws->Void]] = Dictionary()
     private let _dataDeleteListenerLock = NSLock()
+    private var _stateListener:[String:(KeeperState)throws->Void] = Dictionary()
+    private let _stateListenerLock = NSLock()
     
     public init(serverstring:String,connectionTimeout:Int = 2147483647,sessionTimeout:Int = 30000) {
         
@@ -177,8 +179,8 @@ public class ZkClient {
      增加某一个路径的数据变化
      
      - parameter path:        给定的路径
-     - parameter dataChange:  数据变化的事件处理
-     - parameter dataDeleted: 数据节点删除的事件处理
+     - parameter listenerName: 监听器的名字
+     - parameter listener: 数据变化的事件处理
      */
     public func subscribeDataChanges(path:String,listenerName:String,listener:(String,AnyObject?)throws->Void){
      
@@ -201,8 +203,7 @@ public class ZkClient {
      取消某一个路径的数据变化事件订阅
      
      - parameter path:        给定的路径
-     - parameter dataChange:  数据变化的事件处理
-     - parameter dataDeleted: 数据节点删除的事件处理
+     - parameter listenerName:  监听器的名字
      */
     public func unsubscribeDataChanges(path:String,listenerName:String){
         _dataChangeListenerLock.lock()
@@ -214,6 +215,13 @@ public class ZkClient {
         _dataChangeListenerLock.unlock()
     }
     
+    /**
+     订阅节点删除事件
+     
+     - parameter path:         给定的路径
+     - parameter listenerName: 监听器的名字
+     - parameter listener:     监听器
+     */
     public func subscribeDataDelete(path:String,listenerName:String,listener:(String)throws->Void) {
         _dataDeleteListenerLock.lock()
         
@@ -241,10 +249,52 @@ public class ZkClient {
     }
     
     /**
+     订阅连接状态的事件
+     
+     - parameter listenerName: 监听器的名字
+     - parameter listener:     监听器
+     */
+    public func subscribeStateChanges(listenerName:String,listener:(KeeperState)throws->Void) {
+        _stateListenerLock.lock()
+        
+        _stateListener[listenerName] = listener
+        
+        _stateListenerLock.unlock()
+    }
+    
+    /**
+     取消订阅
+     
+     - parameter listenerName: 监听器的名字
+     */
+    public func unsubscribeStateChanges(listenerName:String) {
+        _stateListenerLock.lock()
+        
+        _stateListener.removeValueForKey(listenerName)
+        
+        _stateListenerLock.unlock()
+    }
+    
+    /**
      取消订阅所有的消息处理
      */
     public func unsubscribeAll(){
         
+        _dataChangeListenerLock.lock()
+        _dataChangeListener.removeAll()
+        _dataChangeListenerLock.unlock()
+        
+        _childListenerLock.lock()
+        _childListener.removeAll()
+        _childListenerLock.unlock()
+        
+        _dataDeleteListenerLock.lock()
+        _dataDeleteListener.removeAll()
+        _dataDeleteListenerLock.unlock()
+        
+        _stateListenerLock.lock()
+        _stateListener.removeAll()
+        _stateListenerLock.unlock()
     }
     
     /**
@@ -789,7 +839,7 @@ public class ZkClient {
             dispatch_source_set_event_handler(_heartbeat, { () -> Void in
                 
 //                print("")
-                print("进入setupHeartbeatThread 准备发送心跳")
+                print("进入setupHeartbeatThread 准备发送心跳 :\(NSDate())")
                 
                 let outBuf = StreamOutBuffer()
                 
