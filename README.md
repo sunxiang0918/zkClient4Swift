@@ -2,7 +2,14 @@
 
 zkClient4Swift is a simple zookeeper client written in swift2 . Therefore,**it requires xCode 7 to compile**.
 
-Swift已经开源了,以后Swift不仅仅可以用来写IOS程序,还可以来做其他的后端程序等等.因此,有可能会需要涉及到zookeeper的连接,网上搜索了一遍,目前还没有Swift的Zookeeper的客户端.因此,就自己实现了一个,目前可能还不完善,有需要的兄弟自取吧.
+Swift已经开源了,并且支持Linux上运行.以后Swift不仅仅可以用来写IOS程序,还可以来做其他的后端程序甚至服务端程序.而Zookeeper在分布式服务系统中是必须的基石,像codis,kafka等都需要依赖zookeeper.因此,需要涉及到zookeeper的连接,而我在网上搜索了一遍,目前还没有Swift的Zookeeper的客户端.因此,就自己实现了一个,目前可能还不完善,有需要的兄弟自取吧.
+
+# Features
+
+* zookeeper服务器的连接      OK
+* 节点的基本操作				OK
+* 节点变化的监听				OK
+* 断线重连,网络闪断重试			TODO
 
 # api usage
 ## create client
@@ -66,3 +73,49 @@ zkClient.readData("/Hello/create")
 try zkClient.writeData("/Hello/create2",data: "试一试写入数据")
 ```
 
+### subscribe child changes
+
+```swift
+zkClient.subscribeChildChanges("/Hello", listenerName: "HelloChildChanges") { (path, children) -> Void in
+            print("路径:\(path)子节点发生变化:")
+            if let cc  = children {
+                for c in cc {
+                    print("\(c)")
+                }
+            }
+        }
+```
+
+### subscribe node data changes
+
+```swift
+zkClient.subscribeDataChanges("/Hello/Byte", listenerName: "ByteNodeDataChanges") { (path, data) -> Void in
+            print("路径:\(path)节点内容发生变化,新的内容为:\(data)")
+        }
+```
+
+### subscribe node delete
+
+```swift
+zkClient.subscribeDataDelete("/Hello/Byte", listenerName: "ByteNodeDelete") { (path) -> Void in
+            print("路径节点:\(path)被删除")
+        }
+```
+
+### unsubscribe child changes
+
+```swift
+zkClient.unsubscribeChildChanges("/Hello", listenerName: "HelloChildChanges")
+```
+
+### unsubscribe node data changes
+
+```swift
+zkClient.unsubscribeDataChanges("/Hello", listenerName: "HelloChildChanges")
+```
+
+### unsubscribe node data delete
+
+```swift
+zkClient.unsubscribeDataDelete("/Hello/Byte", listenerName: "ByteNodeDelete")
+```
