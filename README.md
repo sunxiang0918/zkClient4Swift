@@ -12,6 +12,14 @@ Swift已经开源了,并且支持Linux上运行.以后Swift不仅仅可以用来
 * 断线重连,网络闪断重试			TODO
 * 基于framework做一个Mac版的ZK的本地客户端.现在大家都是用的ZooInspector.jar   TODO
 
+# issues
+已知问题:
+
+* 在MACOS上 需要把zookeeper的session超时时间设置为20秒以上. 因为心跳的线程,不知道为什么,有时会卡住11秒左右...发现是sleep(1)这个地方卡住的,还没有找到原因. 但是在IOS上就没有发现这个问题...
+
+# Blog:
+[翔妖除魔的个人博客](http://sunxiang0918.cn)
+
 # api usage
 ## create client
 
