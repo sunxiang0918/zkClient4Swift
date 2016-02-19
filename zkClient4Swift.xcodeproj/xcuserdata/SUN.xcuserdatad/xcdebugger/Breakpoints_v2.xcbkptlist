@@ -31,7 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "682"
             endingLineNumber = "682"
-            landmarkName = "processDataOrChildChange(_:)"
+            landmarkName = "handleNotification(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
