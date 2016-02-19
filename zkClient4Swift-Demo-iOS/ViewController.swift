@@ -13,6 +13,20 @@ class ViewController: UIViewController {
 
     let zkClient = ZkClient(serverstring: "127.0.0.1:2181")
     
+    @IBOutlet weak var pathField: UITextField!
+    
+    @IBOutlet weak var resultTextView: UITextView!
+    
+    @IBAction func getDataAction(sender: UIButton) {
+        if !zkClient.connected {
+            return
+        }
+        
+        let value = zkClient.readData(pathField.text!) as? String
+        
+        resultTextView.text = value
+    }
+    
     @IBAction func connection(sender: UIButton) {
         zkClient.connect()
         
