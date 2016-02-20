@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A4131DB71C78A262007190D1 /* ReadWriteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4131DB61C78A262007190D1 /* ReadWriteLock.swift */; };
 		A4278FB71C70A53B00322A6E /* zkClient4Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = A4278FB61C70A53B00322A6E /* zkClient4Swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC21C70A76D00322A6E /* ZkClient.swift */; };
 		A4278FC91C70AA4A00322A6E /* StreamOutBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */; };
@@ -85,6 +86,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A4131DB61C78A262007190D1 /* ReadWriteLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadWriteLock.swift; sourceTree = "<group>"; };
+		A4131DB81C78A72A007190D1 /* ThreadTest.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = ThreadTest.playground; sourceTree = "<group>"; };
 		A4278FB31C70A53B00322A6E /* zkClient4Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = zkClient4Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4278FB61C70A53B00322A6E /* zkClient4Swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zkClient4Swift.h; sourceTree = "<group>"; };
 		A4278FB81C70A53B00322A6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = zkClient4Swift/Info.plist; sourceTree = "<group>"; };
@@ -264,6 +267,7 @@
 				A4C72A441C72BF1200771E86 /* MessageReceiveQueue.swift */,
 				A4C72A4C1C72D51900771E86 /* Synchronized.swift */,
 				A4C72A5C1C733AAC00771E86 /* SimpleSocket.swift */,
+				A4131DB61C78A262007190D1 /* ReadWriteLock.swift */,
 			);
 			name = commons;
 			sourceTree = "<group>";
@@ -273,6 +277,7 @@
 			children = (
 				A4278FC51C70A7A000322A6E /* SimpleUsage-OSX.playground */,
 				A47C48DE1C7226FD00CB6110 /* SimpleBufferTest.playground */,
+				A4131DB81C78A72A007190D1 /* ThreadTest.playground */,
 			);
 			name = "Example playgrounds";
 			sourceTree = "<group>";
@@ -528,6 +533,7 @@
 				A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */,
 				A4278FD21C71F09300322A6E /* NSMutableData+Extension.swift in Sources */,
 				A4C72A591C73039300771E86 /* GetDataResponse.swift in Sources */,
+				A4131DB71C78A262007190D1 /* ReadWriteLock.swift in Sources */,
 				A4C72A411C722BC400771E86 /* GetChildrenResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -882,6 +888,7 @@
 				A4EAC3801C76B8D9007A3B06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A4EAC3B81C76BA3D007A3B06 /* Build configuration list for PBXNativeTarget "zkClient4Swift-Demo-iOS" */ = {
 			isa = XCConfigurationList;
@@ -890,6 +897,7 @@
 				A4EAC3BA1C76BA3D007A3B06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
