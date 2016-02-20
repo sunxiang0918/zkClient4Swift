@@ -11,34 +11,35 @@ import Foundation
 
 public class ZkClient {
     
-    private var _closed = false
+    private var _closed = false     //是否关闭
     
-    private(set) public var connected = false
+    private(set) public var connected = false       //是否连接
     
-    private var _connection:SimpleSocket
+    private var _connection:SimpleSocket        //Socket
     
-    private var _connectionTimeout:Int
+    private var _connectionTimeout:Int      //连接超时时间
     
-    private var _sessionTimeout:Int
+    private var _sessionTimeout:Int     //Session超时时间
     
-    private let _eventLoopQueue:dispatch_queue_t
-    private let _notifyLoopQueue:dispatch_queue_t
+    private let _eventLoopQueue:dispatch_queue_t        //事件处理异步队列
+    private let _notifyLoopQueue:dispatch_queue_t       //消息通知异步线程
     
-    private let _connsema:dispatch_semaphore_t
-    private let _sendsemaphore:dispatch_semaphore_t
-    private let _eventLock = NSLock()
+    private let _connsema:dispatch_semaphore_t      //连接信号量
+    private let _sendsemaphore:dispatch_semaphore_t     //发送信号量
+    private let _eventLock = NSLock()           //事件的锁
     
-    private var _heartbeatThread:dispatch_source_t?
+    private var _heartbeatThread:dispatch_source_t?     //心跳的异步队列
     
     //是否能处理的一个线程同步的信号量
     private var _readability = dispatch_semaphore_create(0)
     private var _writeability = dispatch_semaphore_create(0)
     
-    private var _sendCache:[NSData] = []
-    private let _receiveMessageQueue = MessageReceiveQueue()
+    private var _sendCache:[NSData] = []        //发送队列
+    private let _receiveMessageQueue = MessageReceiveQueue()        //接收队列
     
-    private var _xid = 0
+    private var _xid = 0        //xid
     
+    /// 事件的监听器
     private var _childListener:[String:[String:(String,[String]?)throws->Void ]] = Dictionary()
     private let _childListenerLock = NSLock()
     private var _dataChangeListener:[String:[String:(String,AnyObject?)throws->Void]] = Dictionary()
@@ -62,8 +63,6 @@ public class ZkClient {
         }
         
         let (host,port) = generateHostAndPort(serverstring)
-        
-        print("链接地址:addr:\(host) port:\(port)")
         
         //TODO 暂时还不支持集群的连接
         _connection = SimpleSocket(addr: host, port: port)
@@ -132,16 +131,242 @@ public class ZkClient {
         
     }
     
+    // MARK: 私有方法
+    
+    /**
+    发送ZK连接的命令
+    */
+    private func sendConnectionRequest(){
+        let outBuf = StreamOutBuffer()
+        
+        let connectRequest = ConnectRequest()
+        connectRequest.timeOut = _sessionTimeout
+        connectRequest.serialize(outBuf)
+        
+        sendMessage(outBuf)
+    }
+    
+    /**
+     执行命令的发送,并整理响应
+     
+     - parameter msg:  消息
+     - parameter type: 事件类型
+     */
+    private func execute(message msg:Serializable,asType type:zkOpCode) -> Response? {
+        
+        //先生成请求的Header
+        let requestHeader = RequestHeader()
+        requestHeader.xid = getAndIncrementXid()
+        requestHeader.type = type
+        
+        //构造出整个请求
+        let buffer = StreamOutBuffer()
+        requestHeader.serialize(buffer)
+        msg.serialize(buffer)
+        
+        //发送请求
+        self.sendMessage(buffer)
+        
+        //阻塞的等待结果的响应
+        return _receiveMessageQueue.waitForResponse(requestHeader.xid)
+    }
+    
+    /**
+     发送消息
+     - parameter outBuf:
+     */
+    private func sendMessage(outBuf:StreamOutBuffer) {
+        
+        if _closed {
+            //TODO
+            return
+        }
+        
+        synchronized(_sendCache, block: { () -> Void in
+            self._sendCache.append(outBuf.getBuffer())
+        })
+        
+        dispatch_semaphore_signal(_sendsemaphore);
+        
+    }
+    
+    /**
+     异步发送任务的循环
+     */
+    private func asyncSendEvent() {
+        
+        while true {
+            if _closed {
+                break
+            }
+            
+            //用于阻止线程在还没有connection的情况下,就开始发送消息了
+            dispatch_semaphore_wait(_sendsemaphore, DISPATCH_TIME_FOREVER);
+            
+            //用于阻止线程在还没有打开连接的时候就开始不断的循环了
+            dispatch_semaphore_wait(_writeability, DISPATCH_TIME_FOREVER)
+            
+            var data:NSData! = nil
+            synchronized(_sendCache, block: { () -> Void in
+                data = self._sendCache.removeFirst()
+            })
+            
+            /**
+             在消息的最前面增加长度标识
+             
+             - parameter data:
+             
+             - returns:
+             */
+            func appendLength(data:NSData) ->NSData {
+                //这里在发送消息前,需要把消息的最前端加上长度
+                let _data = NSMutableData()
+                _data.appendInt(data.length)
+                _data.appendData(data)
+                return _data
+            }
+            
+            let message = appendLength(data)
+            
+            // 发送消息
+            let (success,errMsg) = _connection.send(data: message)
+            
+            if !success {
+                //TODO 还没有处理失败的情况
+                print("发送消息失败"+errMsg)
+            }
+            
+//            print("发送消息成功:\(message)")
+        }
+        
+    }
+    
+    /**
+     异步接收消息的处理
+     */
+    private func asyncRecvEvent(){
+        while true {
+            
+            if _closed {
+                break
+            }
+            
+            //用于阻止线程在还没有打开连接的时候就开始不断的循环了
+            dispatch_semaphore_wait(_readability, DISPATCH_TIME_FOREVER)
+            
+            //到这的肯定是可以读取内容了
+            guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
+                print("读取错误")
+                continue
+            }
+            
+            let data = NSData(uints: uints)
+            
+            //获取到数据的长度
+            let msglen = data.getInt()
+            
+            //获取到真实的数据
+            let inBuf = StreamInBuffer(data: data.subdataWithRange(NSRange(location:sizeof(UInt32),length:msglen)))
+            
+            if(!connected){
+                //如果还没有连接,那么这个地方获取到的消息一定是 连接回调
+                let connectResponse = ConnectResponse()
+                connectResponse.deserialize(inBuf)
+                
+                self.connected = true
+                
+                //设置ping的 后台线程,否则zk会认为你超时了.也就是心跳
+                self.setupHeartbeatThread()
+                
+                dispatch_semaphore_signal(_connsema);
+            }else{
+                //解析消息的头
+                let header = ReplyHeader()
+                header.deserialize(inBuf)
+                
+                let realData = inBuf.getData()      //获取除了头以外的所有数据
+                
+                // 根据xid的不同,确定不同的事件
+                switch header.xid {
+                case -1:
+                    //这里是消息的通知
+                    self.handleNotification(realData)
+                    continue
+                case -2:
+                    //这里是Ping的结果
+                    print("接收到心跳的结果")
+                    continue
+                default:break
+                }
+                
+                /// 把结果放入异步队列
+                let response = Response(header: header, data: realData)
+                
+                _receiveMessageQueue.appendResponse(response, forXid: header.xid)
+                
+            }
+            
+        }
+    }
+    
+    private func setupHeartbeatThread() {
+        
+        
+        _heartbeatThread = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+        
+        if let _heartbeat = _heartbeatThread {
+            dispatch_source_set_timer(_heartbeat, dispatch_time(DISPATCH_TIME_NOW, 0), 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC)
+            
+            dispatch_source_set_event_handler(_heartbeat, { () -> Void in
+                
+//                print("")
+                print("进入setupHeartbeatThread 准备发送心跳 :\(NSDate())")
+                
+                let outBuf = StreamOutBuffer()
+                
+                let ping = Ping()
+                ping.serialize(outBuf)
+                
+                self.sendMessage(outBuf)
+                
+            })
+            
+            dispatch_resume(_heartbeat)
+        }
+    }
+    
+    /**
+     获取新的XID,ZK使用XID来区分异步的任务的
+     
+     - returns:
+     */
+    private func getAndIncrementXid() -> Int {
+        
+        var xid = 0
+        synchronized(_xid) { () -> Void in
+            xid = self._xid + 1
+            self._xid = Int(xid)
+        }
+        
+        return xid
+    }
+    
+}
+
+
+// MARK: - 对Client增加监听方面的增强
+public extension ZkClient {
+    
     // MARK: 事件的订阅相关
     
     /**
-     订阅某个路径的Child变化,调用listener处理事件
-     
-     - parameter path:     给定的路径
-     - parameter listener: 事件发生后的处理
-     
-     - returns: the current children of the path or null if the zk node with the given path doesn't exist.
-     */
+    订阅某个路径的Child变化,调用listener处理事件
+    
+    - parameter path:     给定的路径
+    - parameter listener: 事件发生后的处理
+    
+    - returns: the current children of the path or null if the zk node with the given path doesn't exist.
+    */
     public func subscribeChildChanges(path:String,listenerName:String,listener:(String,[String]?)throws->Void) -> [String]?{
         
         _childListenerLock.lock()
@@ -149,7 +374,7 @@ public class ZkClient {
         let listeners = _childListener[path]
         
         if listeners == nil {
-           _childListener[path] = [:]
+            _childListener[path] = [:]
         }
         
         _childListener[path]?[listenerName] = listener
@@ -183,7 +408,7 @@ public class ZkClient {
      - parameter listener: 数据变化的事件处理
      */
     public func subscribeDataChanges(path:String,listenerName:String,listener:(String,AnyObject?)throws->Void){
-     
+        
         _dataChangeListenerLock.lock()
         
         let listeners = _dataChangeListener[path]
@@ -320,6 +545,204 @@ public class ZkClient {
         exists(path, watch: true)
     }
     
+    // MARK: 私有方法
+    
+    /**
+     异步处理通知事件
+     
+     - parameter data:
+     */
+    private func handleNotification(data:NSData) {
+        let event = WatcherEvent()
+        event.deserialize(StreamInBuffer(data: data))
+        
+        //这里采用了异步的处理来响应事件
+        dispatch_async(_notifyLoopQueue) { () -> Void in
+            self.processNotification(event)
+        }
+        
+    }
+    
+    /**
+     异步处理通知事件
+     
+     - parameter event:
+     */
+    private func processNotification(event:WatcherEvent) {
+        
+        let stateChanged = event.path == nil
+        let znodeChanged = event.path != nil
+        let dataChanged = event.type == EventType.NodeDataChanged.rawValue || event.type == EventType.NodeDeleted.rawValue || event.type == EventType.NodeCreated.rawValue
+            || event.type == EventType.NodeChildrenChanged.rawValue
+        
+        _eventLock.lock()
+        defer {
+            _eventLock.unlock()
+        }
+        
+        do {
+            defer {
+                if stateChanged {
+                    //先空实现
+                }
+                
+                if znodeChanged {
+                    //先空实现
+                }
+                
+                if dataChanged {
+                    //先空实现
+                }
+            }
+            
+            if stateChanged {
+                //先空实现
+            }
+            
+            if dataChanged {
+                self.processDataOrChildChange(event)
+            }
+        }catch _{
+            
+        }
+        
+    }
+    
+    /**
+     处理数据节点或子节点的变化
+     
+     - parameter event:
+     */
+    private func processDataOrChildChange(event:WatcherEvent) {
+        let path = event.path!
+        
+        print("接收到事件:\(event.path) \(event.typeEnum)")
+        
+        func _fireChildChangedEvents(path:String){
+            let childListeners = _childListener[path]
+            if let tmp = childListeners where tmp.count > 0 {
+                fireChildChangedEvents(path,childListeners: tmp)
+            }
+        }
+        
+        func _fireDataChangedEvents(path:String) {
+            let dataChangeListeners = _dataChangeListener[path]
+            if let tmp = dataChangeListeners where tmp.count > 0 {
+                fireDataChangedEvents(path,dataChangeListeners: tmp)
+            }
+        }
+        
+        func _fireDataDeleteEvents(path:String) {
+            let dataDeleteListeners = _dataDeleteListener[path]
+            if let tmp = dataDeleteListeners where tmp.count > 0 {
+                fireDataDeleteEvents(path,dataDeleteListeners: tmp)
+            }
+        }
+        
+        switch event.typeEnum {
+        case .NodeChildrenChanged:
+            _fireChildChangedEvents(path)
+            break
+        case .NodeCreated:
+            //这个地方的逻辑应该是这样的,zk对于同一个节点的不同类型的监听,只会触发一次通知.
+            //由于节点被删除了.那么就需要判断它的父节点是否注册了ChildChangedEvents,如果注册了的,那么同样需要通知出来
+            let parentPath = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
+            _fireChildChangedEvents(parentPath)
+            _fireDataChangedEvents(path)
+            break
+        case .NodeDeleted:
+            //这个地方的逻辑应该是这样的,zk对于同一个节点的不同类型的监听,只会触发一次通知.
+            //由于节点被删除了.那么就需要判断它的父节点是否注册了ChildChangedEvents,如果注册了的,那么同样需要通知出来
+            let parentPath = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
+            _fireChildChangedEvents(parentPath)
+            _fireDataDeleteEvents(path)
+            break
+        case .NodeDataChanged:
+            _fireDataChangedEvents(path)
+            break
+        default:
+            break
+        }
+    }
+    
+    private func fireDataDeleteEvents(path:String,dataDeleteListeners:[String:(String)throws->Void]) {
+        
+        for (name,listener) in dataDeleteListeners {
+            
+            exists(path, watch: true)
+            do{
+                try listener(path)
+            } catch let e {
+                print("处理节点删除消息监听:\(name) 失败path:\(path) error:\(e)")
+            }
+            
+        }
+    }
+    
+    private func fireDataChangedEvents(path:String,dataChangeListeners:[String:(String,AnyObject?)throws->Void]) {
+        
+        for (name,listener) in dataChangeListeners {
+            //TODO 这个地方应该是启动线程的
+            exists(path, watch: true)
+            
+            do{
+                let data = readData(path,watch: true)
+                try listener(path,data)
+            } catch let e {
+                print("处理节点内容变化消息监听:\(name) 失败path:\(path) error:\(e)")
+            }
+            
+        }
+    }
+    
+    private func fireChildChangedEvents(path:String,childListeners:[String:(String,[String]?)throws->Void]){
+        
+        print("开始处理子节点的变化:\(path)")
+        
+        for (name,listener) in childListeners {
+            
+            do{
+                // if the node doesn't exist we should listen for the root node to reappear
+                exists(path, watch: true)
+                
+                let children = getChildren(path,watch: true)
+                
+                try listener(path, children)
+            } catch let e {
+                print("处理节点子节点变化消息监听:\(name) 失败path:\(path) error:\(e)")
+            }
+            
+        }
+    }
+    
+    /**
+     判断是否有监听
+     
+     - parameter path: 路径节点
+     
+     - returns:
+     */
+    private func hasListeners(path:String) -> Bool {
+        
+        if let tmp = self._childListener[path] where tmp.count > 0 {
+            return true
+        }
+        
+        if let tmp = self._dataChangeListener[path] where tmp.count > 0 {
+            return true
+        }
+        
+        if let tmp = self._dataDeleteListener[path] where tmp.count > 0 {
+            return true
+        }
+        
+        return false
+    }
+}
+
+// MARK: - 对节点的基本操作的扩展
+public extension ZkClient {
+    
     // MARK: 节点数据相关
     /**
     创建一个节点
@@ -389,7 +812,7 @@ public class ZkClient {
     
     /**
      获取一个节点的数据
-    
+     
      - parameter path: 节点数据
      
      - returns: 返回的对象
@@ -508,377 +931,4 @@ public class ZkClient {
         return count
     }
     
-    // MARK: 私有方法
-    
-    /**
-    发送ZK连接的命令
-    */
-    private func sendConnectionRequest(){
-        let outBuf = StreamOutBuffer()
-        
-        let connectRequest = ConnectRequest()
-        connectRequest.timeOut = _sessionTimeout
-        connectRequest.serialize(outBuf)
-        
-        sendMessage(outBuf)
-    }
-    
-    /**
-     执行命令的发送,并整理响应
-     
-     - parameter msg:  消息
-     - parameter type: 事件类型
-     */
-    private func execute(message msg:Serializable,asType type:zkOpCode) -> Response? {
-        
-        //先生成请求的Header
-        let requestHeader = RequestHeader()
-        requestHeader.xid = getAndIncrementXid()
-        requestHeader.type = type
-        
-        //构造出整个请求
-        let buffer = StreamOutBuffer()
-        requestHeader.serialize(buffer)
-        msg.serialize(buffer)
-        
-        //发送请求
-        self.sendMessage(buffer)
-        
-        //阻塞的等待结果的响应
-        return _receiveMessageQueue.waitForResponse(requestHeader.xid)
-    }
-    
-    /**
-     发送消息
-     TODO 发送消息现在还是同步的,后面可能会需要改成异步的
-     - parameter outBuf:
-     */
-    private func sendMessage(outBuf:StreamOutBuffer) {
-        
-        if _closed {
-            //TODO
-            return
-        }
-        
-        synchronized(_sendCache, block: { () -> Void in
-            self._sendCache.append(outBuf.getBuffer())
-        })
-        
-        dispatch_semaphore_signal(_sendsemaphore);
-        
-    }
-    
-    
-    private func asyncSendEvent() {
-        
-        while true {
-            if _closed {
-                break
-            }
-            
-            dispatch_semaphore_wait(_sendsemaphore, DISPATCH_TIME_FOREVER);
-            
-            //用于阻止线程在还没有打开连接的时候就开始不断的循环了
-            dispatch_semaphore_wait(_writeability, DISPATCH_TIME_FOREVER)
-            
-            var data:NSData! = nil
-            synchronized(_sendCache, block: { () -> Void in
-                data = self._sendCache.removeFirst()
-            })
-            
-            func appendLength(data:NSData) ->NSData {
-                //这里在发送消息前,需要把消息的最前端加上长度
-                let _data = NSMutableData()
-                _data.appendInt(data.length)
-                _data.appendData(data)
-                return _data
-            }
-            
-            let message = appendLength(data)
-            
-            let (success,errMsg) = _connection.send(data: message)
-            
-            if !success {
-                //TODO 还没有处理失败的情况
-                print("发送消息失败"+errMsg)
-            }
-            
-//            print("发送消息成功:\(message)")
-        }
-        
-    }
-    
-    private func asyncRecvEvent(){
-        while true {
-            
-            if _closed {
-                break
-            }
-            
-            //用于阻止线程在还没有打开连接的时候就开始不断的循环了
-            dispatch_semaphore_wait(_readability, DISPATCH_TIME_FOREVER)
-            
-            //到这的肯定是可以读取内容了
-            guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
-                print("读取错误")
-                continue
-            }
-            
-            let data = NSData(uints: uints)
-            
-            //获取到数据的长度
-            let msglen = data.getInt()
-            
-            //获取到真实的数据
-            let inBuf = StreamInBuffer(data: data.subdataWithRange(NSRange(location:sizeof(UInt32),length:msglen)))
-            
-            //TODO 这里还要判断是否是连接的回调消息
-            if(!connected){
-                //如果还没有连接,那么这个地方获取到的消息一定是 连接回调
-                let connectResponse = ConnectResponse()
-                connectResponse.deserialize(inBuf)
-                
-                self.connected = true
-                
-                //设置ping的 后台线程,否则zk会认为你超时了.也就是心跳
-                self.setupHeartbeatThread()
-                
-                dispatch_semaphore_signal(_connsema);
-            }else{
-                //解析消息的头
-                let header = ReplyHeader()
-                header.deserialize(inBuf)
-                
-//                let headerLength = header.headerLength      //获取消息头的长度
-                
-                let realData = inBuf.getData()      //获取除了头以外的所有数据
-                
-                // 根据xid的不同,确定不同的事件
-                switch header.xid {
-                case -1:
-                    //这里是消息的通知
-                    self.handleNotification(realData)
-                    continue
-                case -2:
-                    //这里是Ping的结果
-                    print("接收到心跳的结果")
-                    continue
-                default:break
-                }
-                
-                let response = Response(header: header, data: realData)
-                
-                _receiveMessageQueue.appendResponse(response, forXid: header.xid)
-                
-            }
-            
-        }
-    }
-    
-    private func handleNotification(data:NSData) {
-        let event = WatcherEvent()
-        event.deserialize(StreamInBuffer(data: data))
-        
-        //这里采用了异步的处理来响应事件
-        dispatch_async(_notifyLoopQueue) { () -> Void in
-            self.processNotification(event)
-        }
-        
-    }
-    
-    private func processNotification(event:WatcherEvent) {
-        
-        let stateChanged = event.path == nil
-        let znodeChanged = event.path != nil
-        let dataChanged = event.type == EventType.NodeDataChanged.rawValue || event.type == EventType.NodeDeleted.rawValue || event.type == EventType.NodeCreated.rawValue
-            || event.type == EventType.NodeChildrenChanged.rawValue
-        
-        _eventLock.lock()
-        defer {
-            _eventLock.unlock()
-        }
-        
-        do {
-            defer {
-                if stateChanged {
-                    //先空实现
-                }
-                
-                if znodeChanged {
-                    //先空实现
-                }
-                
-                if dataChanged {
-                    //先空实现
-                }
-            }
-            
-            if stateChanged {
-                //先空实现
-            }
-            
-            if dataChanged {
-                self.processDataOrChildChange(event)
-            }
-        }catch _{
-            
-        }
-        
-    }
-    
-    private func processDataOrChildChange(event:WatcherEvent) {
-        let path = event.path!
-        
-        print("接收到事件:\(event.path) \(event.typeEnum)")
-        
-        func _fireChildChangedEvents(path:String){
-            let childListeners = _childListener[path]
-            if let tmp = childListeners where tmp.count > 0 {
-                fireChildChangedEvents(path,childListeners: tmp)
-            }
-        }
-        
-        func _fireDataChangedEvents(path:String) {
-            let dataChangeListeners = _dataChangeListener[path]
-            if let tmp = dataChangeListeners where tmp.count > 0 {
-                fireDataChangedEvents(path,dataChangeListeners: tmp)
-            }
-        }
-        
-        func _fireDataDeleteEvents(path:String) {
-            let dataDeleteListeners = _dataDeleteListener[path]
-            if let tmp = dataDeleteListeners where tmp.count > 0 {
-                fireDataDeleteEvents(path,dataDeleteListeners: tmp)
-            }
-        }
-        
-        switch event.typeEnum {
-            case .NodeChildrenChanged:
-                _fireChildChangedEvents(path)
-                break
-            case .NodeCreated:
-                //这个地方的逻辑应该是这样的,zk对于同一个节点的不同类型的监听,只会触发一次通知.
-                //由于节点被删除了.那么就需要判断它的父节点是否注册了ChildChangedEvents,如果注册了的,那么同样需要通知出来
-                let parentPath = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
-                _fireChildChangedEvents(parentPath)
-                _fireDataChangedEvents(path)
-                break
-            case .NodeDeleted:
-                //这个地方的逻辑应该是这样的,zk对于同一个节点的不同类型的监听,只会触发一次通知.
-                //由于节点被删除了.那么就需要判断它的父节点是否注册了ChildChangedEvents,如果注册了的,那么同样需要通知出来
-                let parentPath = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
-                _fireChildChangedEvents(parentPath)
-                _fireDataDeleteEvents(path)
-                break
-            case .NodeDataChanged:
-                _fireDataChangedEvents(path)
-                break
-            default:
-            break
-        }
-    }
-    
-    private func fireDataDeleteEvents(path:String,dataDeleteListeners:[String:(String)throws->Void]) {
-        
-        for (name,listener) in dataDeleteListeners {
-            
-            exists(path, watch: true)
-            do{
-                try listener(path)
-            } catch let e {
-                print("处理节点删除消息监听:\(name) 失败path:\(path) error:\(e)")
-            }
-            
-        }
-    }
-    
-    private func fireDataChangedEvents(path:String,dataChangeListeners:[String:(String,AnyObject?)throws->Void]) {
-        
-        for (name,listener) in dataChangeListeners {
-            //TODO 这个地方应该是启动线程的
-            exists(path, watch: true)
-            
-            do{
-               let data = readData(path,watch: true)
-               try listener(path,data)
-            } catch let e {
-                print("处理节点内容变化消息监听:\(name) 失败path:\(path) error:\(e)")
-            }
-            
-        }
-    }
-    
-    private func fireChildChangedEvents(path:String,childListeners:[String:(String,[String]?)throws->Void]){
-        
-        print("开始处理子节点的变化:\(path)")
-        
-        for (name,listener) in childListeners {
-            
-            do{
-                // if the node doesn't exist we should listen for the root node to reappear
-                exists(path, watch: true)
-                
-                let children = getChildren(path,watch: true)
-                
-                try listener(path, children)
-            } catch let e {
-                print("处理节点子节点变化消息监听:\(name) 失败path:\(path) error:\(e)")
-            }
-            
-        }
-    }
-    
-    private func setupHeartbeatThread() {
-        
-        
-        _heartbeatThread = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
-        
-        if let _heartbeat = _heartbeatThread {
-            dispatch_source_set_timer(_heartbeat, dispatch_time(DISPATCH_TIME_NOW, 0), 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC)
-            
-            dispatch_source_set_event_handler(_heartbeat, { () -> Void in
-                
-//                print("")
-                print("进入setupHeartbeatThread 准备发送心跳 :\(NSDate())")
-                
-                let outBuf = StreamOutBuffer()
-                
-                let ping = Ping()
-                ping.serialize(outBuf)
-                
-                self.sendMessage(outBuf)
-                
-            })
-            
-            dispatch_resume(_heartbeat)
-        }
-    }
-    
-    private func getAndIncrementXid() -> Int {
-        
-        var xid = 0
-        synchronized(_xid) { () -> Void in
-            xid = self._xid + 1
-            self._xid = Int(xid)
-        }
-        
-        return xid
-    }
-    
-    private func hasListeners(path:String) -> Bool {
-        
-        if let tmp = self._childListener[path] where tmp.count > 0 {
-            return true
-        }
-        
-        if let tmp = self._dataChangeListener[path] where tmp.count > 0 {
-            return true
-        }
-        
-        if let tmp = self._dataDeleteListener[path] where tmp.count > 0 {
-            return true
-        }
-        
-        return false
-    }
 }
