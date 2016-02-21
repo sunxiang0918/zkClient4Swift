@@ -23,6 +23,7 @@ public class ZkClient {
     
     private let _eventLoopQueue:dispatch_queue_t        //事件处理异步队列
     private let _notifyLoopQueue:dispatch_queue_t       //消息通知异步线程
+    private let _resubscriptLoopQueue:dispatch_queue_t
     
     private let _connsema:dispatch_semaphore_t      //连接信号量
     private let _sendsemaphore:dispatch_semaphore_t     //发送信号量
@@ -35,7 +36,7 @@ public class ZkClient {
     private var _writeability = dispatch_semaphore_create(0)
     
     private var _sendCache:[NSData] = []        //发送队列
-    private let _receiveMessageQueue = MessageReceiveQueue()        //接收队列
+    private let _receiveMessageQueue:MessageReceiveQueue       //接收队列
     
 //    private var sessionId = 0
     private var _xid = 0        //xid
@@ -55,6 +56,8 @@ public class ZkClient {
         _connectionTimeout = connectionTimeout
         _sessionTimeout = sessionTimeout
         
+        _receiveMessageQueue = MessageReceiveQueue(timeOut: Double(_sessionTimeout)/1000)
+        
         // 解析IP地址和端口,暂时不支持集群
         func generateHostAndPort(serverString:String) ->(String,Int) {
             
@@ -73,6 +76,7 @@ public class ZkClient {
         _sendsemaphore = dispatch_semaphore_create(0)
         _eventLoopQueue = dispatch_queue_create("event.queue", DISPATCH_QUEUE_CONCURRENT);
         _notifyLoopQueue = dispatch_queue_create("notify.queue", DISPATCH_QUEUE_CONCURRENT);
+        _resubscriptLoopQueue = dispatch_queue_create("resubscript.queue", DISPATCH_QUEUE_CONCURRENT);
         
         dispatch_async(_eventLoopQueue) { () -> Void in
             self.asyncSendEvent()
@@ -107,37 +111,21 @@ public class ZkClient {
             
             if stream is NSInputStream {
                 self.connected = false
-                print("接收到endEncountered事件")
+//                print("接收到endEncountered事件")
                 //重新连接
                 self._connection.reconnection()
-                print("完成重连命令")
+//                print("完成重连命令")
                 //发送ZK连接的命令
                 self.sendConnectionRequest()
             }
             
         }
-        
-        _connection.errorOccurredDelegate = {stream in
-            
-            if stream is NSInputStream {
-                self.connected = false
-                print("接收到endEncountered事件")
-                //重新连接
-                self._connection.reconnection()
-                print("完成重连命令")
-                //发送ZK连接的命令
-                self.sendConnectionRequest()
-            }
-        }
-        
         
         //发送ZK连接的命令
         self.sendConnectionRequest()
         
-        print("6")
         //等待连接成功
         dispatch_semaphore_wait(_connsema, DISPATCH_TIME_FOREVER);
-        print("7")
     }
     
     /**
@@ -169,14 +157,11 @@ public class ZkClient {
     */
     private func sendConnectionRequest(){
         let outBuf = StreamOutBuffer()
-        print("开始发送连接请求")
         let connectRequest = ConnectRequest()
-//        connectRequest.sessionId = sessionId        //设置成上一次的sessionId,保证断线重连
         connectRequest.timeOut = _sessionTimeout
         connectRequest.serialize(outBuf)
         
         sendMessage(outBuf)
-        print("完成发送连接请求")
     }
     
     /**
@@ -201,7 +186,14 @@ public class ZkClient {
         self.sendMessage(buffer)
         
         //阻塞的等待结果的响应
-        return _receiveMessageQueue.waitForResponse(requestHeader.xid)
+        do {
+            return try _receiveMessageQueue.waitForResponse(requestHeader.xid)
+        }catch AppException.ReceiveResponseTimeout(xid: let xid, timeout: let to) {
+            print("xid:\(xid) type:\(requestHeader.type) receive no response with \(to) timeout")
+            return nil
+        }catch _ {
+            return nil
+        }
     }
     
     /**
@@ -233,13 +225,10 @@ public class ZkClient {
                 break
             }
             
-            print("1")
             //用于阻止线程在还没有connection的情况下,就开始发送消息了
             dispatch_semaphore_wait(_sendsemaphore, DISPATCH_TIME_FOREVER);
-            print("2")
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
             dispatch_semaphore_wait(_writeability, DISPATCH_TIME_FOREVER)
-            print("3")
             var data:NSData! = nil
             synchronized(_sendCache, block: { () -> Void in
                 data = self._sendCache.removeFirst()
@@ -268,7 +257,7 @@ public class ZkClient {
                 print("发送消息失败"+errMsg)
             }
             
-            print("发送消息成功:\(message)")
+//            print("发送消息成功:\(message)")
         }
         
     }
@@ -284,9 +273,7 @@ public class ZkClient {
             }
             
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
-            print("4")
             dispatch_semaphore_wait(_readability, DISPATCH_TIME_FOREVER)
-            print("5")
             
             //到这的肯定是可以读取内容了
             guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
@@ -307,18 +294,19 @@ public class ZkClient {
                 let connectResponse = ConnectResponse()
                 connectResponse.deserialize(inBuf)
                 
-                print("接收到连接成功的反馈seesionID:\(connectResponse.sessionId) data:\(inBuf.getData())")
+//                print("接收到连接成功的反馈seesionID:\(connectResponse.sessionId) data:\(inBuf.getData())")
                 
                 self.connected = true
-//                self.sessionId = connectResponse.sessionId      //设置sessionId,用于重连的时候有用
-                
-                //重新开启事件的订阅
-//                self.reSubscriptAllListener()
                 
                 //设置ping的 后台线程,否则zk会认为你超时了.也就是心跳
                 self.setupHeartbeatThread()
                 
                 dispatch_semaphore_signal(_connsema);
+                
+                //重新开启事件的订阅
+                dispatch_async(_resubscriptLoopQueue) { () -> Void in
+                    self.reSubscriptAllListener()
+                }
             }else{
                 //解析消息的头
                 let header = ReplyHeader()
@@ -339,7 +327,7 @@ public class ZkClient {
                 default:break
                 }
                 
-                print("接收到的响应:xid:\(header.xid) zxid:\(header.zxid) 消息体:\(realData)")
+//                print("接收到的响应:xid:\(header.xid) zxid:\(header.zxid) 消息体:\(realData)")
                 
                 /// 把结果放入异步队列
                 let response = Response(header: header, data: realData)
@@ -353,7 +341,11 @@ public class ZkClient {
     
     private func setupHeartbeatThread() {
         
-        print("重新开启心跳线程")
+//        print("重新开启心跳线程")
+        
+        if _heartbeatThread != nil {
+            return
+        }
         
         _heartbeatThread = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
         
@@ -362,11 +354,7 @@ public class ZkClient {
             
             dispatch_source_set_event_handler(_heartbeat, { () -> Void in
                 
-                if !self.connected {
-                    return
-                }
-                
-                print("进入setupHeartbeatThread 准备发送心跳 :\(NSDate())")
+//                print("进入setupHeartbeatThread:\(NSThread.currentThread()) 准备发送心跳 :\(NSDate())")
                 
                 let outBuf = StreamOutBuffer()
                 
@@ -569,12 +557,12 @@ public extension ZkClient {
     }
     
     private func reSubscriptAllListener() {
-        
         _childListenerLock.lock()
         if _childListener.count > 0 {
             for (path,listeners) in _childListener {
                 if listeners.count > 0 {
                     watchForChilds(path)
+                    break
                 }
             }
         }
@@ -585,6 +573,7 @@ public extension ZkClient {
             for (path,listeners) in _dataChangeListener {
                 if listeners.count > 0 {
                     watchForData(path)
+                    break
                 }
             }
         }
@@ -595,6 +584,7 @@ public extension ZkClient {
             for (path,listeners) in _dataDeleteListener {
                 if listeners.count > 0 {
                     watchForData(path)
+                    break
                 }
             }
         }
@@ -695,8 +685,6 @@ public extension ZkClient {
     private func processDataOrChildChange(event:WatcherEvent) {
         let path = event.path!
         
-        print("接收到事件:\(event.path) \(event.typeEnum)")
-        
         func _fireChildChangedEvents(path:String){
             let childListeners = _childListener[path]
             if let tmp = childListeners where tmp.count > 0 {
@@ -776,7 +764,7 @@ public extension ZkClient {
     
     private func fireChildChangedEvents(path:String,childListeners:[String:(String,[String]?)throws->Void]){
         
-        print("开始处理子节点的变化:\(path)")
+//        print("开始处理子节点的变化:\(path)")
         
         for (name,listener) in childListeners {
             

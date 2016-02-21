@@ -170,25 +170,18 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
                 hasBytesAvailableDelegate?(aStream)
                 break
             case NSStreamEvent.EndEncountered:
-                print("接收到EndEncountered事件:\(aStream) error:\(aStream.streamError)")
+//                print("接收到EndEncountered事件:\(aStream) error:\(aStream.streamError)")
                 
                 connected = false
                 
-//                if !_closed {
-//                    //走到这里,就说明是断线了.那么就需要重连
-//                    self.reconnection()
-//                }
-//                NSBlockOperation { () -> Void in
-//                    self.endEncounteredDelegate?(aStream)
-//                }
                 endEncounteredDelegate?(aStream)
                 break
             case NSStreamEvent.ErrorOccurred:
-                print("接收到ErrorOccurred事件:\(aStream) error:\(aStream.streamError)")
+//                print("接收到ErrorOccurred事件:\(aStream) error:\(aStream.streamError)")
                 errorOccurredDelegate?(aStream)
                 break
             case NSStreamEvent.OpenCompleted:
-                print("接收到OpenCompleted事件:\(aStream)")
+//                print("接收到OpenCompleted事件:\(aStream)")
                 if aStream is NSInputStream {
                     inputLock.writeUnlock()
                 }
@@ -197,7 +190,7 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
                 }
                 break
         default:
-            print("接收到事件:\(eventCode) OpenCompleted事件:\(NSStreamEvent.OpenCompleted):\(aStream)")
+            print("接收到事件:\(eventCode) :\(aStream)")
             break;
         }
     }

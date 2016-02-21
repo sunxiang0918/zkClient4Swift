@@ -16,6 +16,12 @@ public class MessageReceiveQueue {
     //响应数据,key为xid,value为响应
     private var _responseMap:[Int:Response] = [:]
     
+    private let timeOut:Double
+    
+    init(timeOut:Double = 30){
+        self.timeOut = timeOut
+    }
+    
     /**
      等待xid的响应
      
@@ -23,16 +29,15 @@ public class MessageReceiveQueue {
      
      - returns:
      */
-    public func waitForResponse(xid:Int) -> Response {
+    public func waitForResponse(xid:Int)throws -> Response {
         let lock = NSConditionLock(condition: ReceiveState.WAITING.rawValue)
         
         //放入锁对象
         synchronized(_lockMap){
             self._lockMap[xid] = lock
         }
-        
         //等待锁对象变为已接收到响应
-        lock.lockWhenCondition(ReceiveState.ARRIVED.rawValue)
+        lock.lockWhenCondition(ReceiveState.ARRIVED.rawValue, beforeDate: NSDate(timeIntervalSinceNow: timeOut))
         
         //取出响应
         var response:Response?
@@ -52,7 +57,11 @@ public class MessageReceiveQueue {
             self._responseMap.removeValueForKey(xid)
         }
         
-        return response!
+        guard let tmp = response else {
+            throw AppException.ReceiveResponseTimeout(xid: xid, timeout: timeOut)
+        }
+        
+        return tmp
     }
     
     public func appendResponse(response:Response, forXid xid:Int) {
@@ -75,7 +84,7 @@ public class MessageReceiveQueue {
             return
         }
         
-        lock.lockWhenCondition(ReceiveState.WAITING.rawValue)
+        lock.lockWhenCondition(ReceiveState.WAITING.rawValue,beforeDate: NSDate(timeIntervalSinceNow: timeOut))
         
         synchronized(_responseMap) {
             self._responseMap[xid] = response

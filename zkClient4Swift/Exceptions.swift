@@ -12,4 +12,5 @@ enum AppException : ErrorType {
     case FormatCastException
     case IllegalArgumentException
     case IllegalFormatException(coinsNeeded: Int)
+    case ReceiveResponseTimeout(xid:Int,timeout:Double)
 }

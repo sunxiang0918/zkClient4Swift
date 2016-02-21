@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "zkClient4Swift/SimpleSocket.swift"
-            timestampString = "477753825.154422"
+            timestampString = "477759100.201953"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
+            startingLineNumber = "185"
+            endingLineNumber = "185"
             landmarkName = "stream(_:handleEvent:)"
             landmarkType = "5">
          </BreakpointContent>
