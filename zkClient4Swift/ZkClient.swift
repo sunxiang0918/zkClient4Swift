@@ -37,6 +37,7 @@ public class ZkClient {
     private var _sendCache:[NSData] = []        //发送队列
     private let _receiveMessageQueue = MessageReceiveQueue()        //接收队列
     
+//    private var sessionId = 0
     private var _xid = 0        //xid
     
     /// 事件的监听器
@@ -102,11 +103,41 @@ public class ZkClient {
         _connection.hasSpaceAvailableDelegate = {_ in dispatch_semaphore_signal(self._writeability)}
         _connection.hasBytesAvailableDelegate = {_ in dispatch_semaphore_signal(self._readability)}
         
+        _connection.endEncounteredDelegate = {stream in
+            
+            if stream is NSInputStream {
+                self.connected = false
+                print("接收到endEncountered事件")
+                //重新连接
+                self._connection.reconnection()
+                print("完成重连命令")
+                //发送ZK连接的命令
+                self.sendConnectionRequest()
+            }
+            
+        }
+        
+        _connection.errorOccurredDelegate = {stream in
+            
+            if stream is NSInputStream {
+                self.connected = false
+                print("接收到endEncountered事件")
+                //重新连接
+                self._connection.reconnection()
+                print("完成重连命令")
+                //发送ZK连接的命令
+                self.sendConnectionRequest()
+            }
+        }
+        
+        
         //发送ZK连接的命令
         self.sendConnectionRequest()
         
+        print("6")
         //等待连接成功
         dispatch_semaphore_wait(_connsema, DISPATCH_TIME_FOREVER);
+        print("7")
     }
     
     /**
@@ -138,12 +169,14 @@ public class ZkClient {
     */
     private func sendConnectionRequest(){
         let outBuf = StreamOutBuffer()
-        
+        print("开始发送连接请求")
         let connectRequest = ConnectRequest()
+//        connectRequest.sessionId = sessionId        //设置成上一次的sessionId,保证断线重连
         connectRequest.timeOut = _sessionTimeout
         connectRequest.serialize(outBuf)
         
         sendMessage(outBuf)
+        print("完成发送连接请求")
     }
     
     /**
@@ -200,17 +233,17 @@ public class ZkClient {
                 break
             }
             
+            print("1")
             //用于阻止线程在还没有connection的情况下,就开始发送消息了
             dispatch_semaphore_wait(_sendsemaphore, DISPATCH_TIME_FOREVER);
-            
+            print("2")
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
             dispatch_semaphore_wait(_writeability, DISPATCH_TIME_FOREVER)
-            
+            print("3")
             var data:NSData! = nil
             synchronized(_sendCache, block: { () -> Void in
                 data = self._sendCache.removeFirst()
             })
-            
             /**
              在消息的最前面增加长度标识
              
@@ -230,13 +263,12 @@ public class ZkClient {
             
             // 发送消息
             let (success,errMsg) = _connection.send(data: message)
-            
             if !success {
                 //TODO 还没有处理失败的情况
                 print("发送消息失败"+errMsg)
             }
             
-//            print("发送消息成功:\(message)")
+            print("发送消息成功:\(message)")
         }
         
     }
@@ -252,7 +284,9 @@ public class ZkClient {
             }
             
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
+            print("4")
             dispatch_semaphore_wait(_readability, DISPATCH_TIME_FOREVER)
+            print("5")
             
             //到这的肯定是可以读取内容了
             guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
@@ -273,7 +307,13 @@ public class ZkClient {
                 let connectResponse = ConnectResponse()
                 connectResponse.deserialize(inBuf)
                 
+                print("接收到连接成功的反馈seesionID:\(connectResponse.sessionId) data:\(inBuf.getData())")
+                
                 self.connected = true
+//                self.sessionId = connectResponse.sessionId      //设置sessionId,用于重连的时候有用
+                
+                //重新开启事件的订阅
+//                self.reSubscriptAllListener()
                 
                 //设置ping的 后台线程,否则zk会认为你超时了.也就是心跳
                 self.setupHeartbeatThread()
@@ -294,10 +334,12 @@ public class ZkClient {
                     continue
                 case -2:
                     //这里是Ping的结果
-                    print("接收到心跳的结果")
+//                    print("接收到心跳的结果")
                     continue
                 default:break
                 }
+                
+                print("接收到的响应:xid:\(header.xid) zxid:\(header.zxid) 消息体:\(realData)")
                 
                 /// 把结果放入异步队列
                 let response = Response(header: header, data: realData)
@@ -311,6 +353,7 @@ public class ZkClient {
     
     private func setupHeartbeatThread() {
         
+        print("重新开启心跳线程")
         
         _heartbeatThread = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
         
@@ -319,7 +362,10 @@ public class ZkClient {
             
             dispatch_source_set_event_handler(_heartbeat, { () -> Void in
                 
-//                print("")
+                if !self.connected {
+                    return
+                }
+                
                 print("进入setupHeartbeatThread 准备发送心跳 :\(NSDate())")
                 
                 let outBuf = StreamOutBuffer()
@@ -520,6 +566,39 @@ public extension ZkClient {
         _stateListenerLock.lock()
         _stateListener.removeAll()
         _stateListenerLock.unlock()
+    }
+    
+    private func reSubscriptAllListener() {
+        
+        _childListenerLock.lock()
+        if _childListener.count > 0 {
+            for (path,listeners) in _childListener {
+                if listeners.count > 0 {
+                    watchForChilds(path)
+                }
+            }
+        }
+        _childListenerLock.unlock()
+        
+        _dataChangeListenerLock.lock()
+        if _dataChangeListener.count > 0 {
+            for (path,listeners) in _dataChangeListener {
+                if listeners.count > 0 {
+                    watchForData(path)
+                }
+            }
+        }
+        _dataChangeListenerLock.unlock()
+        
+        _dataDeleteListenerLock.lock()
+        if _dataDeleteListener.count > 0 {
+            for (path,listeners) in _dataDeleteListener {
+                if listeners.count > 0 {
+                    watchForData(path)
+                }
+            }
+        }
+        _dataDeleteListenerLock.unlock()
     }
     
     /**

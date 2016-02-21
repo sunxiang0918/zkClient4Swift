@@ -4,7 +4,7 @@
 import zkClient4Swift
 import Foundation
 
-let zkClient = ZkClient(serverstring: "127.0.0.1:8080")
+let zkClient = ZkClient(serverstring: "127.0.0.1:2181")
 
 debugPrint(zkClient.connected)
 
@@ -36,5 +36,7 @@ print("获取节点数据:\(zkClient.readData("/Hello/create2"))")
 try zkClient.writeData("/Hello/create2",data: "试一试写入数据")
 
 print("写入后获取节点数据:\(zkClient.readData("/Hello/create2"))")
+
+zkClient.close()
 
 //print("获取节点数据:\(zkClient.readData("/ftengine/workspace/entity.indexmeta.xml"))")

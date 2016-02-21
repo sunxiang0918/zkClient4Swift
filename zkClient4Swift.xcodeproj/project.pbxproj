@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A409E6EF1C79D18700F2C810 /* ReadWriteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4131DB61C78A262007190D1 /* ReadWriteLock.swift */; };
 		A4131DB71C78A262007190D1 /* ReadWriteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4131DB61C78A262007190D1 /* ReadWriteLock.swift */; };
 		A4278FB71C70A53B00322A6E /* zkClient4Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = A4278FB61C70A53B00322A6E /* zkClient4Swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4278FC31C70A76D00322A6E /* ZkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC21C70A76D00322A6E /* ZkClient.swift */; };
@@ -551,6 +552,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A409E6EF1C79D18700F2C810 /* ReadWriteLock.swift in Sources */,
 				A4EAC3821C76B9F6007A3B06 /* StreamOutBuffer.swift in Sources */,
 				A4EAC3831C76B9F6007A3B06 /* StreamInBuffer.swift in Sources */,
 				A4EAC3841C76B9F6007A3B06 /* Exceptions.swift in Sources */,
