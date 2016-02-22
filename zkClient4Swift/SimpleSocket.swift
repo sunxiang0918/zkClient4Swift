@@ -53,7 +53,7 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
         outputLock = ReadWriteLock()
     }
     
-    private let sharedWorkQueue = dispatch_queue_create("com.vluxe.starscream.websocket", DISPATCH_QUEUE_SERIAL)
+    private let sharedWorkQueue = dispatch_queue_create("socketWork.queue", DISPATCH_QUEUE_SERIAL)
     
     public func connect(timeout t:Int)->(Bool,String){
         
