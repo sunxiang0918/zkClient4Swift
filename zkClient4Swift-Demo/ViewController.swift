@@ -17,7 +17,7 @@ class ViewController: NSViewController {
     
     @IBAction func connection(sender: NSButton) {
         
-        zkClient.connect()
+        try! zkClient.connect()
         
         debugPrint(zkClient.connected)
         
@@ -55,7 +55,7 @@ class ViewController: NSViewController {
             return
         }
         
-        let value = zkClient.readData(pathField.stringValue) as? String
+        let value = try! zkClient.readData(pathField.stringValue) as? String
         
         textView.string = value
     }

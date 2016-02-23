@@ -103,6 +103,33 @@ public enum KeeperExceptionCode:Int {
     case AuthFailed = -115
 }
 
+extension KeeperExceptionCode : CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case Ok:return "Ok"
+        case SystemError:return "SystemError"
+        case RuntimeInconsistency:return "RuntimeInconsistency"
+        case DataInconsistency:return "DataInconsistency"
+        case ConnectionLoss:return "ConnectionLoss"
+        case MarshallingError:return "MarshallingError"
+        case Unimplemented:return "Unimplemented"
+        case OperationTimeout:return "OperationTimeout"
+        case BadArguments:return "BadArguments"
+        case APIError:return "APIError"
+        case NoNode:return "NoNode"
+        case NoAuth:return "NoAuth"
+        case BadVersion:return "BadVersion"
+        case NoChildrenForEphemerals:return "NoChildrenForEphemerals"
+        case NodeExists:return "NodeExists"
+        case NotEmpty:return "NotEmpty"
+        case SessionExpired:return "SessionExpired"
+        case InvalidCallback:return "InvalidCallback"
+        case InvalidACL:return "InvalidACL"
+        case AuthFailed:return "AuthFailed"
+        }
+    }
+}
+
 /**
  监听事件的枚举
  

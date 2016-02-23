@@ -53,7 +53,7 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
         outputLock = ReadWriteLock()
     }
     
-    private let sharedWorkQueue = dispatch_queue_create("socketWork.queue", DISPATCH_QUEUE_SERIAL)
+    private let sharedWorkQueue = dispatch_queue_create("socketWork.queue", DISPATCH_QUEUE_CONCURRENT)
     
     public func connect(timeout t:Int)->(Bool,String){
         
@@ -105,7 +105,6 @@ public class SimpleSocket : NSObject,NSStreamDelegate {
     }
     
     public func send(var data d:[UInt8])->(Bool,String){
-     
         outputLock.readLock()
         defer{outputLock.readUnlock()}
         

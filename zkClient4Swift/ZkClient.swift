@@ -38,8 +38,19 @@ public class ZkClient {
     private var _sendCache:[NSData] = []        //发送队列
     private let _receiveMessageQueue:MessageReceiveQueue       //接收队列
     
-//    private var sessionId = 0
     private var _xid = 0        //xid
+    
+    /// 获取新的XID,ZK使用XID来区分异步的任务的
+    private var nextXid:Int {
+        get{
+            var xid = 0
+            synchronized(_xid) { () -> Void in
+                xid = self._xid + 1
+                self._xid = Int(xid)
+            }
+            return xid
+        }
+    }
     
     /// 事件的监听器
     private var _childListener:[String:[String:(String,[String]?)throws->Void ]] = Dictionary()
@@ -79,29 +90,37 @@ public class ZkClient {
         _resubscriptLoopQueue = dispatch_queue_create("resubscript.queue", DISPATCH_QUEUE_CONCURRENT);
         
         dispatch_async(_eventLoopQueue) { () -> Void in
-            self.asyncSendEvent()
+            do{
+                try self.asyncSendEvent()
+            }catch _ {
+                
+            }
         }
         
         dispatch_async(_eventLoopQueue) { () -> Void in
-            self.asyncRecvEvent()
+            do{
+                try self.asyncRecvEvent()
+            }catch _ {
+                
+            }
         }
     }
     
     /**
      打开连接
      */
-    public func connect() {
+    public func connect()throws {
         
         if _closed {
-            print("此链接已经被关闭了,需要重新实例化才能打开")
-            return
+            NSLog("此链接已经被关闭了,需要重新实例化才能打开")
+            throw AppException.AlreadyClosedException
         }
         
         //打开Socket连接
         let (success,errMsg) = _connection.connect(timeout: self._sessionTimeout)
         
         if  !success {
-            print("打开连接失败"+errMsg)
+            throw AppException.ConnectionException(error: errMsg)
         }
         
         _connection.hasSpaceAvailableDelegate = {_ in dispatch_semaphore_signal(self._writeability)}
@@ -131,10 +150,11 @@ public class ZkClient {
     /**
      关闭连接
      */
-    public func close() {
+    public func close()throws {
         
-        if !self._closed {
-            return
+        if self._closed {
+            NSLog("此链接已经被关闭了,不能重复关闭")
+            throw AppException.AlreadyClosedException
         }
         
         synchronized(_closed) { () -> Void in
@@ -161,7 +181,7 @@ public class ZkClient {
         connectRequest.timeOut = _sessionTimeout
         connectRequest.serialize(outBuf)
         
-        sendMessage(outBuf)
+        try! sendMessage(outBuf)
     }
     
     /**
@@ -174,7 +194,7 @@ public class ZkClient {
         
         //先生成请求的Header
         let requestHeader = RequestHeader()
-        requestHeader.xid = getAndIncrementXid()
+        requestHeader.xid = nextXid
         requestHeader.type = type
         
         //构造出整个请求
@@ -182,16 +202,17 @@ public class ZkClient {
         requestHeader.serialize(buffer)
         msg.serialize(buffer)
         
-        //发送请求
-        self.sendMessage(buffer)
-        
         //阻塞的等待结果的响应
-        do {
+        do{
+            //发送请求
+            try self.sendMessage(buffer)
+            
             return try _receiveMessageQueue.waitForResponse(requestHeader.xid)
-        }catch AppException.ReceiveResponseTimeout(xid: let xid, timeout: let to) {
-            print("xid:\(xid) type:\(requestHeader.type) receive no response with \(to) timeout")
+        }catch AppException.ReceiveResponseTimeout(let xid,let timeout) {
+            NSLog("接收xid:%d的响应超时:%f", xid,timeout)
             return nil
-        }catch _ {
+        }catch let e {
+            print(e)
             return nil
         }
     }
@@ -200,11 +221,11 @@ public class ZkClient {
      发送消息
      - parameter outBuf:
      */
-    private func sendMessage(outBuf:StreamOutBuffer) {
+    private func sendMessage(outBuf:StreamOutBuffer)throws {
         
         if _closed {
-            //TODO
-            return
+            NSLog("此链接已经被关闭了,需要重新实例化才能打开")
+            throw AppException.AlreadyClosedException
         }
         
         synchronized(_sendCache, block: { () -> Void in
@@ -218,21 +239,24 @@ public class ZkClient {
     /**
      异步发送任务的循环
      */
-    private func asyncSendEvent() {
+    private func asyncSendEvent()throws {
         
         while true {
             if _closed {
-                break
+                NSLog("此链接已经被关闭了,需要重新实例化才能打开")
+                throw AppException.AlreadyClosedException
             }
             
             //用于阻止线程在还没有connection的情况下,就开始发送消息了
             dispatch_semaphore_wait(_sendsemaphore, DISPATCH_TIME_FOREVER);
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
             dispatch_semaphore_wait(_writeability, DISPATCH_TIME_FOREVER)
+            
             var data:NSData! = nil
             synchronized(_sendCache, block: { () -> Void in
                 data = self._sendCache.removeFirst()
             })
+            
             /**
              在消息的最前面增加长度标识
              
@@ -253,8 +277,7 @@ public class ZkClient {
             // 发送消息
             let (success,errMsg) = _connection.send(data: message)
             if !success {
-                //TODO 还没有处理失败的情况
-                print("发送消息失败"+errMsg)
+                NSLog("发送消息失败:%@", errMsg)
             }
             
 //            print("发送消息成功:\(message)")
@@ -265,11 +288,12 @@ public class ZkClient {
     /**
      异步接收消息的处理
      */
-    private func asyncRecvEvent(){
+    private func asyncRecvEvent()throws {
         while true {
             
             if _closed {
-                break
+                NSLog("此链接已经被关闭了,需要重新实例化才能打开")
+                throw AppException.AlreadyClosedException
             }
             
             //用于阻止线程在还没有打开连接的时候就开始不断的循环了
@@ -277,7 +301,7 @@ public class ZkClient {
             
             //到这的肯定是可以读取内容了
             guard let uints = _connection.read(102400, timeout: _sessionTimeout) else {
-                print("读取错误")
+                NSLog("读取消息错误,没有获取到数据")
                 continue
             }
             
@@ -361,28 +385,15 @@ public class ZkClient {
                 let ping = Ping()
                 ping.serialize(outBuf)
                 
-                self.sendMessage(outBuf)
-                
+                do{
+                    try self.sendMessage(outBuf)
+                }catch _ {
+                    NSLog("本次心跳失败")
+                }
             })
             
             dispatch_resume(_heartbeat)
         }
-    }
-    
-    /**
-     获取新的XID,ZK使用XID来区分异步的任务的
-     
-     - returns:
-     */
-    private func getAndIncrementXid() -> Int {
-        
-        var xid = 0
-        synchronized(_xid) { () -> Void in
-            xid = self._xid + 1
-            self._xid = Int(xid)
-        }
-        
-        return xid
     }
     
 }
@@ -424,7 +435,7 @@ public extension ZkClient {
      - parameter path:     给定的路径
      - parameter listener: 事件处理器
      */
-    public func unsubscribeChildChanges(path:String,listenerName:String ) {
+    public func unsubscribeChildChanges(path:String,listenerName:String) {
         _childListenerLock.lock()
         
         var listeners = _childListener[path]
@@ -600,9 +611,16 @@ public extension ZkClient {
      */
     public func watchForChilds(path:String) -> [String]? {
         
-        exists(path, watch: true)
+        do{
+            try exists(path, watch: true)
         
-        return getChildren(path, watch: true);
+            return try getChildren(path, watch: true);
+        }catch AppException.OperationException(let code, let error){
+            print("子节点观察器失败:\(code) error:\(error)")
+            return nil
+        }catch _ {
+            return nil
+        }
     }
     
     /**
@@ -611,7 +629,12 @@ public extension ZkClient {
      - parameter path:
      */
     public func watchForData(path:String) {
-        exists(path, watch: true)
+        do{
+            try exists(path, watch: true)
+        }catch AppException.OperationException(let code, let error){
+            print("数据观察器失败:\(code) error:\(error)")
+        }catch _ {
+        }
     }
     
     // MARK: 私有方法
@@ -736,8 +759,8 @@ public extension ZkClient {
         
         for (name,listener) in dataDeleteListeners {
             
-            exists(path, watch: true)
             do{
+                try exists(path, watch: true)
                 try listener(path)
             } catch let e {
                 print("处理节点删除消息监听:\(name) 失败path:\(path) error:\(e)")
@@ -749,11 +772,11 @@ public extension ZkClient {
     private func fireDataChangedEvents(path:String,dataChangeListeners:[String:(String,AnyObject?)throws->Void]) {
         
         for (name,listener) in dataChangeListeners {
-            //TODO 这个地方应该是启动线程的
-            exists(path, watch: true)
             
             do{
-                let data = readData(path,watch: true)
+                try exists(path, watch: true)
+                
+                let data = try readData(path,watch: true)
                 try listener(path,data)
             } catch let e {
                 print("处理节点内容变化消息监听:\(name) 失败path:\(path) error:\(e)")
@@ -764,15 +787,13 @@ public extension ZkClient {
     
     private func fireChildChangedEvents(path:String,childListeners:[String:(String,[String]?)throws->Void]){
         
-//        print("开始处理子节点的变化:\(path)")
-        
         for (name,listener) in childListeners {
             
             do{
                 // if the node doesn't exist we should listen for the root node to reappear
-                exists(path, watch: true)
+                try exists(path, watch: true)
                 
-                let children = getChildren(path,watch: true)
+                let children = try getChildren(path,watch: true)
                 
                 try listener(path, children)
             } catch let e {
@@ -835,21 +856,23 @@ public extension ZkClient {
         createRequest.acls = Ids.OPEN_ACL_UNSAFE
         
         //执行命令,并得到结果
-        guard let resposne = execute(message: createRequest, asType: .create) else {
+        guard let response = execute(message: createRequest, asType: .create) else {
             //TODO 这里应该需要处理错误的情况
             return ""
         }
         
-        if  resposne.header.error == KeeperExceptionCode.NoNode.rawValue && createParents {
+        if  response.header.error == KeeperExceptionCode.NoNode.rawValue && createParents {
             //表示没有父节点,需要根据判断来创建父节点
-            
             let parentDir = path.substringToIndex(path.rangeOfString("/", options: .BackwardsSearch)!.startIndex)
             try self.create(parentDir, data: nil, model: model, createParents: createParents, serialize: serialize)
             return try self.create(path, data: data, model: model, createParents: createParents, serialize: serialize)
+        }else if response.header.error != KeeperExceptionCode.Ok.rawValue {
+            print("创建节点:\(path)失败,错误为:\(response.header.error)")
+            throw AppException.OperationException(code: KeeperExceptionCode(rawValue: response.header.error)!.description,error: "创建节点:\(path)失败,错误为:\(response.header.error)")
         }
         
         let createResponse = CreateResponse()
-        createResponse.deserialize(StreamInBuffer(data: resposne.data))
+        createResponse.deserialize(StreamInBuffer(data: response.data))
         
         return createResponse.path ?? ""
         
@@ -862,18 +885,23 @@ public extension ZkClient {
      
      - returns: 删除成功返回true,失败返回false
      */
-    public func delete(path:String) -> Bool {
+    public func delete(path:String)throws -> Bool {
         
         let deleteRequest = DeleteRequest()
         deleteRequest.path = path
         
         //执行命令,并得到结果
-        guard let resposne = execute(message: deleteRequest, asType: .delete) else {
+        guard let response = execute(message: deleteRequest, asType: .delete) else {
             //TODO 这里应该需要处理错误的情况
             return false
         }
         
-        return resposne.header.error == KeeperExceptionCode.Ok.rawValue
+        if response.header.error != KeeperExceptionCode.Ok.rawValue {
+            print("删除节点:\(path) 失败,错误为:\(response.header.error)")
+            throw AppException.OperationException(code: KeeperExceptionCode(rawValue: response.header.error)!.description,error: "删除节点:\(path) 失败,错误为:\(response.header.error)")
+        }
+        
+        return response.header.error == KeeperExceptionCode.Ok.rawValue
         
     }
     
@@ -884,20 +912,25 @@ public extension ZkClient {
      
      - returns: 返回的对象
      */
-    public func readData(path:String,watch:Bool? = nil,deserialize:(StreamInBuffer)->AnyObject? = {inBuffer in inBuffer.readString()}) -> AnyObject? {
+    public func readData(path:String,watch:Bool? = nil,deserialize:(StreamInBuffer)->AnyObject? = {inBuffer in inBuffer.readString()})throws -> AnyObject? {
         
         let getDataRequest = GetDataRequest()
         getDataRequest.path = path
         getDataRequest.watch = watch ?? hasListeners(path)
         
         //执行命令,并得到结果
-        guard let resposne = execute(message: getDataRequest, asType: .getData) else {
+        guard let response = execute(message: getDataRequest, asType: .getData) else {
             //TODO 这里应该需要处理错误的情况
             return nil
         }
         
+        if response.header.error != KeeperExceptionCode.Ok.rawValue {
+            print("获取节点:\(path)数据 失败,错误为:\(response.header.error)")
+            throw AppException.OperationException(code: KeeperExceptionCode(rawValue: response.header.error)!.description,error: "获取节点:\(path)数据 失败,错误为:\(response.header.error)")
+        }
+        
         let getDataResponse = GetDataResponse()
-        getDataResponse.deserialize(StreamInBuffer(data: resposne.data))
+        getDataResponse.deserialize(StreamInBuffer(data: response.data))
         
         
         guard let data = getDataResponse.data else {
@@ -925,12 +958,17 @@ public extension ZkClient {
         setDataRequest.data = _outBuffer.getBuffer()
         
         //执行命令,并得到结果
-        guard let resposne = execute(message: setDataRequest, asType: .setData) else {
+        guard let response = execute(message: setDataRequest, asType: .setData) else {
             //TODO 这里应该需要处理错误的情况
             return false
         }
         
-        return resposne.header.error == KeeperExceptionCode.Ok.rawValue
+        if response.header.error != KeeperExceptionCode.Ok.rawValue {
+            print("写入节点:\(path) 数据 失败,错误为:\(response.header.error)")
+            throw AppException.OperationException(code: KeeperExceptionCode(rawValue: response.header.error)!.description,error: "写入节点:\(path) 数据 失败,错误为:\(response.header.error)")
+        }
+        
+        return response.header.error == KeeperExceptionCode.Ok.rawValue
     }
     
     /**
@@ -940,20 +978,25 @@ public extension ZkClient {
      
      - returns: 存在返回true,不存在返回false
      */
-    public func exists(path:String,watch:Bool? = nil) -> Bool {
+    public func exists(path:String,watch:Bool? = nil)throws -> Bool {
         
         let existsRequest = ExistsRequest()
         existsRequest.path = path
         existsRequest.watch = watch ?? hasListeners(path)
         
         //执行命令,并得到结果
-        guard let resposne = execute(message: existsRequest, asType: .exists) else {
+        guard let response = execute(message: existsRequest, asType: .exists) else {
             //TODO 这里应该需要处理错误的情况
             return false
         }
         
+        if response.header.error != KeeperExceptionCode.Ok.rawValue {
+            print("检测节点:\(path) 是否存在 失败,错误为:\(response.header.error)")
+            throw AppException.OperationException(code: KeeperExceptionCode(rawValue: response.header.error)!.description,error: "检测节点:\(path) 是否存在 失败,错误为:\(response.header.error)")
+        }
+        
         let existsResponse = ExistsResponse()
-        existsResponse.deserialize(StreamInBuffer(data: resposne.data))
+        existsResponse.deserialize(StreamInBuffer(data: response.data))
         
         return existsResponse.exists
     }
@@ -965,20 +1008,25 @@ public extension ZkClient {
      
      - returns: 子节点,如果当前节点不存在,那么返回nil
      */
-    public func getChildren(path:String,watch:Bool? = nil) -> [String]? {
+    public func getChildren(path:String,watch:Bool? = nil)throws -> [String]? {
         
         let getChildrenRequest = GetChildrenRequest()
         getChildrenRequest.path = path
         getChildrenRequest.watch = watch ?? hasListeners(path)
         
         //执行命令,并得到结果
-        guard let resposne = execute(message: getChildrenRequest, asType: .getChildren2) else {
+        guard let response = execute(message: getChildrenRequest, asType: .getChildren2) else {
             //TODO 这里应该需要处理错误的情况
             return nil
         }
         
+        if response.header.error != KeeperExceptionCode.Ok.rawValue {
+            print("获取节点:\(path) 子节点失败,错误为:\(response.header.error)")
+            throw AppException.OperationException(code: KeeperExceptionCode(rawValue: response.header.error)!.description,error: "获取节点:\(path) 子节点失败,错误为:\(response.header.error)")
+        }
+        
         let getChildrenResponse = GetChildrenResponse()
-        getChildrenResponse.deserialize(StreamInBuffer(data: resposne.data))
+        getChildrenResponse.deserialize(StreamInBuffer(data: response.data))
         
         return getChildrenResponse.children
     }
@@ -990,8 +1038,8 @@ public extension ZkClient {
      
      - returns: 如果当前节点不存在,或者没有子节点,返回0
      */
-    public func countChildren(path:String) -> Int {
-        guard let count = self.getChildren(path)?.count else {
+    public func countChildren(path:String)throws -> Int {
+        guard let count = try self.getChildren(path)?.count else {
             return 0
         }
         
