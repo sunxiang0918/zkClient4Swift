@@ -45,6 +45,8 @@
 		A4C72A8B1C74065C00771E86 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4C72A8A1C74065C00771E86 /* Assets.xcassets */; };
 		A4C72A8E1C74065C00771E86 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4C72A8C1C74065C00771E86 /* Main.storyboard */; };
 		A4C72A941C741E6800771E86 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C72A931C741E6800771E86 /* Ping.swift */; };
+		A4C9B41C1C7DD82A001B69B6 /* MMTabBarView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4C9B41B1C7DD82A001B69B6 /* MMTabBarView.framework */; };
+		A4C9B41E1C7DD856001B69B6 /* MMTabBarView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A4C9B41B1C7DD82A001B69B6 /* MMTabBarView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A4EAC37D1C76B8D9007A3B06 /* zkClient4Swift_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = A4EAC37C1C76B8D9007A3B06 /* zkClient4Swift_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4EAC3821C76B9F6007A3B06 /* StreamOutBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC81C70AA4A00322A6E /* StreamOutBuffer.swift */; };
 		A4EAC3831C76B9F6007A3B06 /* StreamInBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FCA1C70AA8C00322A6E /* StreamInBuffer.swift */; };
@@ -78,13 +80,21 @@
 		A4EAC39F1C76B9F6007A3B06 /* ZkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4278FC21C70A76D00322A6E /* ZkClient.swift */; };
 		A4EAC3A01C76B9F6007A3B06 /* Deserializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D61C72179100CB6110 /* Deserializable.swift */; };
 		A4EAC3A11C76B9F6007A3B06 /* Serializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47C48D81C7217B600CB6110 /* Serializable.swift */; };
-		A4EAC3A91C76BA3D007A3B06 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EAC3A81C76BA3D007A3B06 /* AppDelegate.swift */; };
-		A4EAC3AB1C76BA3D007A3B06 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EAC3AA1C76BA3D007A3B06 /* ViewController.swift */; };
-		A4EAC3AE1C76BA3D007A3B06 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4EAC3AC1C76BA3D007A3B06 /* Main.storyboard */; };
-		A4EAC3B11C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A4EAC3AF1C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodeld */; };
-		A4EAC3B31C76BA3D007A3B06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4EAC3B21C76BA3D007A3B06 /* Assets.xcassets */; };
-		A4EAC3B61C76BA3D007A3B06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4EAC3B41C76BA3D007A3B06 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A4C9B41F1C7DD856001B69B6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A4C9B41E1C7DD856001B69B6 /* MMTabBarView.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A4131DB61C78A262007190D1 /* ReadWriteLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadWriteLock.swift; sourceTree = "<group>"; };
@@ -131,17 +141,12 @@
 		A4C72A8D1C74065C00771E86 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A4C72A8F1C74065C00771E86 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A4C72A931C741E6800771E86 /* Ping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
+		A4C9B41B1C7DD82A001B69B6 /* MMTabBarView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MMTabBarView.framework; sourceTree = "<group>"; };
+		A4C9B4201C7DDF87001B69B6 /* Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridge.h; sourceTree = "<group>"; };
 		A4EAC37A1C76B8D9007A3B06 /* zkClient4Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = zkClient4Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4EAC37C1C76B8D9007A3B06 /* zkClient4Swift_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zkClient4Swift_iOS.h; sourceTree = "<group>"; };
 		A4EAC37E1C76B8D9007A3B06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A4EAC3A61C76BA3D007A3B06 /* zkClient4Swift-Demo-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "zkClient4Swift-Demo-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A4EAC3A81C76BA3D007A3B06 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A4EAC3AA1C76BA3D007A3B06 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		A4EAC3AD1C76BA3D007A3B06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		A4EAC3B01C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = zkClient4Swift_Demo_iOS.xcdatamodel; sourceTree = "<group>"; };
-		A4EAC3B21C76BA3D007A3B06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A4EAC3B51C76BA3D007A3B06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A4EAC3B71C76BA3D007A3B06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4C9B41C1C7DD82A001B69B6 /* MMTabBarView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,7 +191,6 @@
 				A47C48C51C72088300CB6110 /* Third parties */,
 				A4C72A851C74065C00771E86 /* zkClient4Swift-Demo */,
 				A4EAC37B1C76B8D9007A3B06 /* zkClient4Swift_iOS */,
-				A4EAC3A71C76BA3D007A3B06 /* zkClient4Swift-Demo-iOS */,
 				A4278FB41C70A53B00322A6E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -294,13 +299,23 @@
 		A4C72A851C74065C00771E86 /* zkClient4Swift-Demo */ = {
 			isa = PBXGroup;
 			children = (
+				A4C9B41A1C7DD81A001B69B6 /* Frameworks */,
 				A4C72A861C74065C00771E86 /* AppDelegate.swift */,
 				A4C72A881C74065C00771E86 /* ViewController.swift */,
 				A4C72A8A1C74065C00771E86 /* Assets.xcassets */,
 				A4C72A8C1C74065C00771E86 /* Main.storyboard */,
 				A4C72A8F1C74065C00771E86 /* Info.plist */,
+				A4C9B4201C7DDF87001B69B6 /* Bridge.h */,
 			);
 			path = "zkClient4Swift-Demo";
+			sourceTree = "<group>";
+		};
+		A4C9B41A1C7DD81A001B69B6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A4C9B41B1C7DD82A001B69B6 /* MMTabBarView.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A4EAC37B1C76B8D9007A3B06 /* zkClient4Swift_iOS */ = {
@@ -310,20 +325,6 @@
 				A4EAC37E1C76B8D9007A3B06 /* Info.plist */,
 			);
 			path = zkClient4Swift_iOS;
-			sourceTree = "<group>";
-		};
-		A4EAC3A71C76BA3D007A3B06 /* zkClient4Swift-Demo-iOS */ = {
-			isa = PBXGroup;
-			children = (
-				A4EAC3A81C76BA3D007A3B06 /* AppDelegate.swift */,
-				A4EAC3AA1C76BA3D007A3B06 /* ViewController.swift */,
-				A4EAC3AC1C76BA3D007A3B06 /* Main.storyboard */,
-				A4EAC3B21C76BA3D007A3B06 /* Assets.xcassets */,
-				A4EAC3B41C76BA3D007A3B06 /* LaunchScreen.storyboard */,
-				A4EAC3B71C76BA3D007A3B06 /* Info.plist */,
-				A4EAC3AF1C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodeld */,
-			);
-			path = "zkClient4Swift-Demo-iOS";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -373,6 +374,7 @@
 				A4C72A801C74065C00771E86 /* Sources */,
 				A4C72A811C74065C00771E86 /* Frameworks */,
 				A4C72A821C74065C00771E86 /* Resources */,
+				A4C9B41F1C7DD856001B69B6 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -491,9 +493,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4EAC3B61C76BA3D007A3B06 /* LaunchScreen.storyboard in Resources */,
-				A4EAC3B31C76BA3D007A3B06 /* Assets.xcassets in Resources */,
-				A4EAC3AE1C76BA3D007A3B06 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -592,9 +591,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4EAC3B11C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodeld in Sources */,
-				A4EAC3AB1C76BA3D007A3B06 /* ViewController.swift in Sources */,
-				A4EAC3A91C76BA3D007A3B06 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,22 +603,6 @@
 				A4C72A8D1C74065C00771E86 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		A4EAC3AC1C76BA3D007A3B06 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A4EAC3AD1C76BA3D007A3B06 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		A4EAC3B41C76BA3D007A3B06 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A4EAC3B51C76BA3D007A3B06 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -762,10 +742,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/zkClient4Swift-Demo",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "zkClient4Swift-Demo/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.sunxiang0918.zkClient4Swift-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "zkClient4Swift-Demo/Bridge.h";
 			};
 			name = Debug;
 		};
@@ -774,10 +761,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/zkClient4Swift-Demo",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "zkClient4Swift-Demo/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				OTHER_LDFLAGS = "-lc++";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.sunxiang0918.zkClient4Swift-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "zkClient4Swift-Demo/Bridge.h";
 			};
 			name = Release;
 		};
@@ -902,19 +896,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		A4EAC3AF1C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				A4EAC3B01C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodel */,
-			);
-			currentVersion = A4EAC3B01C76BA3D007A3B06 /* zkClient4Swift_Demo_iOS.xcdatamodel */;
-			path = zkClient4Swift_Demo_iOS.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = A4278FAA1C70A53B00322A6E /* Project object */;
 }

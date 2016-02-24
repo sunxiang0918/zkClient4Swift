@@ -11,6 +11,9 @@ import zkClient4Swift
 
 class ViewController: NSViewController {
 
+    @IBOutlet weak var tabBar: MMTabBarView!
+    @IBOutlet weak var tabBarHeight: NSLayoutConstraint!
+    
     let zkClient = ZkClient(serverstring: "127.0.0.1:2181")
 
 //    let socket = SimpleSocket(addr: "127.0.0.1", port: 8080)
@@ -65,6 +68,8 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tabBar.delegate = self
+//        tabBar.setHideForSingleTab(true)
         
         // Do any additional setup after loading the view.
     }
@@ -75,6 +80,16 @@ class ViewController: NSViewController {
         }
     }
 
+}
 
+extension ViewController: MMTabBarViewDelegate {
+ 
+    func tabView(aTabView: NSTabView!, tabBarViewDidHide tabBarView: MMTabBarView!) {
+        tabBarHeight.constant = 0.0
+    }
+    
+    func tabView(aTabView: NSTabView!, tabBarViewDidUnhide tabBarView: MMTabBarView!) {
+        tabBarHeight.constant = 20.0
+    }
 }
 
