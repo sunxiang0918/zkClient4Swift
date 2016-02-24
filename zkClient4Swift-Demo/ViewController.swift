@@ -89,7 +89,7 @@ extension ViewController: MMTabBarViewDelegate {
     }
     
     func tabView(aTabView: NSTabView!, tabBarViewDidUnhide tabBarView: MMTabBarView!) {
-        tabBarHeight.constant = 20.0
+        tabBarHeight.constant = 30.0
     }
 }
 
