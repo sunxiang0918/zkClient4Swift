@@ -20,6 +20,12 @@ public class WatcherEvent:Serializable,Deserializable {
         }
     }
     
+    public var stateEnum:KeeperState {
+        get {
+            return KeeperState(rawValue: state)!
+        }
+    }
+    
     public func serialize(buf: StreamOutBuffer) {
         buf.appendInt(type)
         buf.appendInt(state)

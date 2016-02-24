@@ -688,7 +688,7 @@ public extension ZkClient {
             }
             
             if stateChanged {
-                //先空实现
+                self.processStateChange(event)
             }
             
             if dataChanged {
@@ -698,6 +698,37 @@ public extension ZkClient {
             
         }
         
+    }
+    
+    /**
+     处理ZK状态的变化
+     
+     - parameter event:
+     */
+    private func processStateChange(event:WatcherEvent) {
+        
+        func _fireStateChangeEvents(event:WatcherEvent) {
+            
+            if _stateListener.count > 0 {
+                for (_,listener) in _stateListener {
+                    do{
+                      try listener(event.stateEnum)
+                    }catch let e {
+                        print("响应状态变化事件出错:\(e)")
+                    }
+                }
+            }
+        }
+        
+        _fireStateChangeEvents(event)
+        
+        if event.stateEnum == KeeperState.Expired {
+            self.connected = false
+            //重新连接
+            self._connection.reconnection()
+            //发送ZK连接的命令
+            self.sendConnectionRequest()
+        }
     }
     
     /**
