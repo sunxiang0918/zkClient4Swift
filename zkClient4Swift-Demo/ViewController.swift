@@ -13,6 +13,7 @@ class ViewController: NSViewController {
 
     @IBOutlet weak var tabBar: MMTabBarView!
     @IBOutlet weak var tabBarHeight: NSLayoutConstraint!
+    @IBOutlet weak var tabView: NSTabView!
     
     let zkClient = ZkClient(serverstring: "127.0.0.1:2181")
 
@@ -68,9 +69,42 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tabBar.delegate = self
-//        tabBar.setHideForSingleTab(true)
+//        tabBar.delegate = self
+//        tabView.delegate = self
+        tabBar.setStyleNamed("safari")
+        tabBar.setHideForSingleTab(true)
+        tabBar.setShowAddTabButton(true)
+        tabBar.setOrientation(MMTabBarHorizontalOrientation)
+        tabBar.setButtonMinWidth(100)
+        tabBar.setButtonMaxWidth(400)
         
+        // remove any tabs present in the nib
+        for item in tabView.tabViewItems {
+            tabView.removeTabViewItem(item)
+        }
+        
+        print(tabBar.numberOfTabViewItems())
+        
+        let newItem = NSStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateControllerWithIdentifier("quickConnectionSplitView") as! QuickConnectionViewItem
+        
+        let view = NSTabViewItem(viewController: newItem)
+        let model1 = DemoModel()
+        model1.title = "asdf"
+        view.identifier = model1
+        
+        print(tabBar.numberOfTabViewItems())
+        
+        tabView.addTabViewItem(view)
+        
+        tabBar.addAttachedButtonForTabViewItem(view)
+        
+        print(tabBar.numberOfTabViewItems())
+        
+        
+        let newItem2 = NSStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateControllerWithIdentifier("quickConnectionSplitView") as! QuickConnectionViewItem
+        
+        tabView.addTabViewItem(NSTabViewItem(viewController: newItem2))
+        print(tabBar.numberOfTabViewItems())
         // Do any additional setup after loading the view.
     }
 
@@ -82,14 +116,29 @@ class ViewController: NSViewController {
 
 }
 
-extension ViewController: MMTabBarViewDelegate {
+extension ViewController: MMTabBarViewDelegate,NSTabViewDelegate {
  
-    func tabView(aTabView: NSTabView!, tabBarViewDidHide tabBarView: MMTabBarView!) {
-        tabBarHeight.constant = 0.0
+    func addNewTabToTabView(aTabView: NSTabView!) {
+        let newItem = NSStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateControllerWithIdentifier("quickConnectionSplitView") as! QuickConnectionViewItem
+        
+        let view = NSTabViewItem(viewController: newItem)
+        let model1 = DemoModel()
+        model1.title = "asdf"
+        view.identifier = model1
+        
+        tabView.addTabViewItem(view)
     }
     
-    func tabView(aTabView: NSTabView!, tabBarViewDidUnhide tabBarView: MMTabBarView!) {
-        tabBarHeight.constant = 30.0
+    func tabViewDidChangeNumberOfTabViewItems(tabView: NSTabView) {
+        print("到这来了")
     }
+    
+//    func tabView(aTabView: NSTabView!, tabBarViewDidHide tabBarView: MMTabBarView!) {
+//        tabBarHeight.constant = 0.0
+//    }
+//    
+//    func tabView(aTabView: NSTabView!, tabBarViewDidUnhide tabBarView: MMTabBarView!) {
+//        tabBarHeight.constant = 30.0
+//    }
 }
 
