@@ -71,12 +71,12 @@ class ViewController: NSViewController {
         
 //        tabBar.delegate = self
 //        tabView.delegate = self
-        tabBar.setStyleNamed("safari")
+        tabBar.setStyleNamed("Adium")
         tabBar.setHideForSingleTab(true)
         tabBar.setShowAddTabButton(true)
-        tabBar.setOrientation(MMTabBarHorizontalOrientation)
-        tabBar.setButtonMinWidth(100)
-        tabBar.setButtonMaxWidth(400)
+//        tabBar.setOrientation(MMTabBarHorizontalOrientation)
+        tabBar.setButtonMinWidth(1000)
+        tabBar.setButtonMaxWidth(4000)
         
         // remove any tabs present in the nib
         for item in tabView.tabViewItems {
@@ -90,6 +90,7 @@ class ViewController: NSViewController {
         let view = NSTabViewItem(viewController: newItem)
         let model1 = DemoModel()
         model1.title = "asdf"
+        model1.isProcessing = true
         view.identifier = model1
         
         print(tabBar.numberOfTabViewItems())

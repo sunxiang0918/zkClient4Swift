@@ -12,6 +12,19 @@ public class DemoModel : NSObject,MMTabBarItem {
     
     public var title:String!
     
+    public var icon:NSImage?
+    
+    public var largeImage:NSImage?
+    
+    public var objectCount:Int = 0
+    
+    public var objectCountColor:NSColor?
+    
+    public var isProcessing:Bool = false
+    
+    public var isEdited:Bool = false
+    
+    public var hasCloseButton:Bool = true
     
 //    @property (copy)   NSString     *title;
 //    @property (retain) NSImage      *icon;
