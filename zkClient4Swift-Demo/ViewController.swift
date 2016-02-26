@@ -12,8 +12,8 @@ import zkClient4Swift
 class ViewController: NSViewController {
 
     @IBOutlet weak var tabBar: MMTabBarView!
-    @IBOutlet weak var tabBarHeight: NSLayoutConstraint!
     @IBOutlet weak var tabView: NSTabView!
+    @IBOutlet weak var tabBarWidth: NSLayoutConstraint!
     
     let zkClient = ZkClient(serverstring: "127.0.0.1:2181")
 
@@ -71,12 +71,12 @@ class ViewController: NSViewController {
         
 //        tabBar.delegate = self
 //        tabView.delegate = self
-        tabBar.setStyleNamed("Adium")
+//        tabBar.setStyleNamed("Safari")
         tabBar.setHideForSingleTab(true)
         tabBar.setShowAddTabButton(true)
-//        tabBar.setOrientation(MMTabBarHorizontalOrientation)
-        tabBar.setButtonMinWidth(1000)
-        tabBar.setButtonMaxWidth(4000)
+        tabBar.setOrientation(MMTabBarVerticalOrientation)
+//        tabBar.setButtonMinWidth(1000)
+//        tabBar.setButtonMaxWidth(4000)
         
         // remove any tabs present in the nib
         for item in tabView.tabViewItems {
@@ -104,7 +104,7 @@ class ViewController: NSViewController {
         
         let newItem2 = NSStoryboard(name: "Main", bundle: NSBundle.mainBundle()).instantiateControllerWithIdentifier("quickConnectionSplitView") as! QuickConnectionViewItem
         
-        tabView.addTabViewItem(NSTabViewItem(viewController: newItem2))
+//        tabView.addTabViewItem(NSTabViewItem(viewController: newItem2))
         print(tabBar.numberOfTabViewItems())
         // Do any additional setup after loading the view.
     }
@@ -134,12 +134,12 @@ extension ViewController: MMTabBarViewDelegate,NSTabViewDelegate {
         print("到这来了")
     }
     
-//    func tabView(aTabView: NSTabView!, tabBarViewDidHide tabBarView: MMTabBarView!) {
-//        tabBarHeight.constant = 0.0
-//    }
-//    
-//    func tabView(aTabView: NSTabView!, tabBarViewDidUnhide tabBarView: MMTabBarView!) {
-//        tabBarHeight.constant = 30.0
-//    }
+    func tabView(aTabView: NSTabView!, tabBarViewDidHide tabBarView: MMTabBarView!) {
+        tabBarWidth.constant = 0.0
+    }
+    
+    func tabView(aTabView: NSTabView!, tabBarViewDidUnhide tabBarView: MMTabBarView!) {
+        tabBarWidth.constant = 100.0
+    }
 }
 
