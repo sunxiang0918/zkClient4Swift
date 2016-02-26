@@ -680,10 +680,10 @@
             </objects>
             <point key="canvasLocation" x="-405" y="1373"/>
         </scene>
-        <!--ViewController-->
+        <!--主界面-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" userLabel="ViewController" customClass="ViewController" customModule="zkClient4Swift_Demo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" userLabel="主界面" customClass="ViewController" customModule="zkClient4Swift_Demo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="825" height="540"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -751,10 +751,10 @@
             </objects>
             <point key="canvasLocation" x="581.5" y="1415"/>
         </scene>
-        <!--Quick Connection View Item-->
+        <!--快速连接界面-->
         <scene sceneID="xS5-vV-ERb">
             <objects>
-                <splitViewController storyboardIdentifier="quickConnectionSplitView" id="XCq-ZF-kRi" customClass="QuickConnectionViewItem" customModule="zkClient4Swift_Demo" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="quickConnectionSplitView" id="XCq-ZF-kRi" userLabel="快速连接界面" customClass="QuickConnectionViewItem" customModule="zkClient4Swift_Demo" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="ct1-Hd-gi8"/>
                         <splitViewItem id="hmf-2J-vnu"/>
@@ -775,10 +775,10 @@
             </objects>
             <point key="canvasLocation" x="1395" y="1501"/>
         </scene>
-        <!--View Controller-->
+        <!--快速连接侧边栏-->
         <scene sceneID="nCK-P6-G2X">
             <objects>
-                <viewController id="zMp-PV-GqA" sceneMemberID="viewController">
+                <viewController id="zMp-PV-GqA" userLabel="快速连接侧边栏" sceneMemberID="viewController">
                     <view key="view" id="s1f-cK-nHu">
                         <rect key="frame" x="0.0" y="0.0" width="213" height="493"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -894,10 +894,10 @@
             </objects>
             <point key="canvasLocation" x="1853.5" y="1661.5"/>
         </scene>
-        <!--View Controller-->
+        <!--连接界面-->
         <scene sceneID="rHv-jN-Uch">
             <objects>
-                <viewController id="z3e-M1-XB9" sceneMemberID="viewController">
+                <viewController id="z3e-M1-XB9" userLabel="连接界面" sceneMemberID="viewController">
                     <view key="view" id="lgH-7A-OLe">
                         <rect key="frame" x="0.0" y="0.0" width="741" height="493"/>
                         <autoresizingMask key="autoresizingMask"/>
