@@ -69,19 +69,14 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        tabBar.delegate = self
-//        tabView.delegate = self
-//        tabBar.setStyleNamed("Safari")
         tabBar.setHideForSingleTab(true)
         tabBar.setShowAddTabButton(true)
         tabBar.setOrientation(MMTabBarVerticalOrientation)
-//        tabBar.setButtonMinWidth(1000)
-//        tabBar.setButtonMaxWidth(4000)
         
         // remove any tabs present in the nib
-        for item in tabView.tabViewItems {
-            tabView.removeTabViewItem(item)
-        }
+//        for item in tabView.tabViewItems {
+//            tabView.removeTabViewItem(item)
+//        }
         
         print(tabBar.numberOfTabViewItems())
         
@@ -95,9 +90,7 @@ class ViewController: NSViewController {
         
         print(tabBar.numberOfTabViewItems())
         
-        tabView.addTabViewItem(view)
-        
-        tabBar.addAttachedButtonForTabViewItem(view)
+//        tabView.addTabViewItem(view)
         
         print(tabBar.numberOfTabViewItems())
         
